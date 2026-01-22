@@ -4,18 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0b0f" />
-  <title>2 km −30s Final</title>
+  <title>2 km −30s Speed Plan</title>
 
   <style>
     :root{
       --bg:#0b0b0f;
       --card:#15151c;
-      --card2:#101017;
       --muted:#9aa0a6;
       --text:#ffffff;
       --accent:#6fd3ff;
       --line:rgba(255,255,255,.08);
       --pill:rgba(255,255,255,.06);
+      --tick:#3ad55c;
     }
     *{box-sizing:border-box;}
     html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;}
@@ -27,44 +27,41 @@
     select{background:#101017;color:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;}
     .card{background:#15151c;border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0;}
     .cardTitle{font-size:18px;font-weight:800;}
-    .dayTitle{font-size:22px;font-weight:900;}
+    .dayTitle{font-size:22px;font-weight:900;margin-bottom:8px;}
     .muted{color:var(--muted);}
-    .bigTime{font-size:48px;font-weight:900;letter-spacing:1px;text-align:center;margin:10px 0;}
-    .mainSet{display:grid;grid-template-columns:32px 1fr 60px 50px;gap:10px;align-items:center;margin:6px 0;}
-    .restBox{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;height:38px;display:flex;align-items:center;justify-content:center;font-weight:700;}
-    .mobilityItem{margin:6px 0;}
-    button{cursor:pointer;padding:8px 12px;border-radius:12px;border:none;background:var(--accent);color:#081018;font-weight:700;}
+    .repRow{display:flex;justify-content:space-between;align-items:center;margin:6px 0;padding:6px 10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03);}
+    .repRow.completed{background:rgba(58,213,92,.1);}
+    .repText{flex:1;}
+    .timerSpan{font-variant-numeric:tabular-nums;font-weight:700;margin-left:8px;}
+    input[type=checkbox]{width:22px;height:22px;accent-color:var(--tick);}
+    .restRow{font-size:13px;color:var(--muted);margin-left:30px;}
+    .sessionTimer{font-size:36px;font-weight:900;letter-spacing:1px;margin:12px 0;text-align:center;}
+    .btn{border:0;background:var(--pill);color:var(--text);padding:10px 14px;border-radius:14px;font-weight:600;cursor:pointer;margin-right:6px;}
+    .btnPrimary{background:var(--accent);color:#081018;}
   </style>
 </head>
 
 <body>
   <div class="app">
-    <h1>2 km −30s Final</h1>
-    <div class="sub">Scientifically-based · 3-week block · Target: −30s</div>
+    <h1>2 km −30s Speed Plan</h1>
+    <div class="sub">Scientifically-based · 3-week block · Goal: −30s</div>
 
     <div class="row">
       <div class="chip">
         <strong>Day</strong>
         <select id="daySelect"></select>
       </div>
+      <div class="spacer"></div>
+      <button class="btn btnPrimary" id="startSession">Start</button>
+      <button class="btn" id="pauseSession">Pause</button>
+      <button class="btn" id="resetSession">Reset</button>
     </div>
 
-    <!-- Session Timer -->
-    <div class="card">
-      <div class="cardTitle">Session</div>
-      <div class="bigTime" id="sessionTime">00:00:00</div>
-      <div class="row" style="justify-content:center;gap:10px;">
-        <button id="startSession">Start</button>
-        <button id="pauseSession">Pause</button>
-        <button id="resetSession">Reset</button>
-      </div>
-    </div>
+    <div class="sessionTimer" id="sessionTime">00:00:00</div>
 
-    <!-- Day Workout -->
     <div class="card" id="dayCard">
       <div class="dayTitle" id="dayTitle">—</div>
-      <!-- Day Explanation -->
-      <div id="dayExplain"></div>
+      <div id="dayExplain" class="muted"></div>
 
       <details open>
         <summary>Warm-up</summary>
@@ -82,6 +79,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=1"></script>
+  <script src="app.js?v=999"></script>
 </body>
 </html>
