@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2km mins 30 final</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <h1>2 km Speed Plan -30s</h1>
+  <div class="sub">3-week block · Scientifically-based</div>
+
+  <div class="row">
+    <div class="chip">
+      <strong>Day</strong>
+      <select id="daySelect"></select>
+    </div>
+  </div>
+
+  <div class="card" id="dayCard">
+    <div class="dayTitle" id="dayTitle">—</div>
+
+    <!-- Explanation card injected by JS -->
+
+    <details open>
+      <summary>Warm-up</summary>
+      <ul id="warmupList"></ul>
+    </details>
+
+    <div id="mainBlock"></div>
+
+    <details>
+      <summary>Mobility</summary>
+      <div id="mobilityList"></div>
+    </details>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
