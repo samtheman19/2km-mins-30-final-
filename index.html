@@ -5,159 +5,100 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2km Training Plan</title>
 <style>
-:root {
-  --bg-dark: #0f1220;
-  --card-bg: #15182a;
-  --highlight: #28a745;
-  --text-light: #eee;
-  --accent: #1e90ff;
-}
-
-body {
-  margin:0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-dark);
-  color: var(--text-light);
-}
-
-header {
-  text-align:center;
-  padding:16px;
-  font-size:24px;
-  font-weight:bold;
-  border-bottom:1px solid #222;
-}
-
-.container {
-  max-width:500px;
-  margin:16px auto;
-  padding:0 12px;
-}
-
-select {
-  width:100%;
-  padding:10px;
-  border-radius:8px;
-  background:#101017;
-  color:#fff;
-  border:none;
-  margin-bottom:12px;
-  font-size:16px;
-}
-
-.card {
-  background: var(--card-bg);
-  padding:14px;
-  border-radius:12px;
-  margin-bottom:16px;
-}
-
-h2, h3 {
-  margin:6px 0;
-}
-
-ul {
-  margin:8px 0 0 20px;
-  padding:0;
-}
-
-#sessionTimer {
-  text-align:center;
-  font-size:48px;
-  margin:12px 0;
-}
-
-.timer-buttons {
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  margin-bottom:16px;
-}
-
-.timer-buttons button {
-  padding:8px 16px;
-  border-radius:8px;
-  border:none;
-  background: var(--accent);
-  color:#fff;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.repRow {
-  background:#101017;
-  padding:10px;
-  border-radius:8px;
-  margin-top:8px;
-  position:relative;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.progressBar {
-  position:absolute;
-  top:0;
-  left:0;
-  height:100%;
-  background-color:var(--highlight);
-  width:0%;
-  opacity:0.3;
-  border-radius:8px;
-  transition: width 1s linear;
-}
-
-.repRow.completed {
-  opacity:0.7;
-  text-decoration: line-through;
-}
-
-.thursdayDropdown {
-  margin-bottom:12px;
-  padding:10px;
-  background:#222;
-  border-radius:10px;
-  border:2px solid var(--accent);
-}
-
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0d0f1a;
+    color: white;
+  }
+  header {
+    padding: 16px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  .card {
+    background: #12142b;
+    margin: 12px;
+    padding: 18px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  }
+  select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    background: #101017;
+    color: white;
+    border: none;
+    margin-bottom: 12px;
+  }
+  ul {
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 6px;
+  }
+  .repRow {
+    background: #0f101e;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 10px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .repRow.completed {
+    opacity: 0.6;
+    text-decoration: line-through;
+  }
+  #sessionTimer {
+    text-align: center;
+    font-size: 36px;
+    margin: 12px 0;
+  }
+  button {
+    padding: 8px 14px;
+    margin: 4px;
+    border-radius: 8px;
+    border: none;
+    background: #1c1e3a;
+    color: white;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #2a2c4f;
+  }
 </style>
 </head>
-
 <body>
 
 <header>2km Training Plan</header>
 
-<div class="container">
-
-  <div id="sessionTimer">00:00</div>
-  <div class="timer-buttons">
-    <button id="startSession">Start</button>
-    <button id="pauseSession">Pause</button>
-    <button id="resetSession">Reset</button>
-  </div>
-
+<div class="card">
   <select id="daySelect"></select>
+  <h2 id="dayTitle"></h2>
+  <p id="dayExplain"></p>
+  <div id="sessionTimer">00:00</div>
+  <button id="startSession">Start</button>
+  <button id="pauseSession">Pause</button>
+  <button id="resetSession">Reset</button>
+</div>
 
-  <div class="card">
-    <h2 id="dayTitle"></h2>
-    <p id="dayExplain"></p>
-  </div>
+<div class="card">
+  <h3>Warm-up</h3>
+  <ul id="warmupList"></ul>
+</div>
 
-  <div class="card">
-    <h3>Warm-up</h3>
-    <ul id="warmupList"></ul>
-  </div>
+<div class="card">
+  <h3>Main Session</h3>
+  <div id="mainBlock"></div>
+</div>
 
-  <div class="card">
-    <h3>Main Session</h3>
-    <div id="mainBlock"></div>
-  </div>
-
-  <div class="card">
-    <h3>Mobility / Cool Down</h3>
-    <ul id="mobilityList"></ul>
-  </div>
-
+<div class="card">
+  <h3>Mobility / Cooldown</h3>
+  <ul id="mobilityList"></ul>
 </div>
 
 <script src="app.js"></script>
