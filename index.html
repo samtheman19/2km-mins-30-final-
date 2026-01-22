@@ -4,156 +4,139 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2km Training Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #1b1f34;
-    color: #fff;
-  }
-  header {
-    background: linear-gradient(90deg, #ff512f, #dd2476);
-    padding: 18px;
-    text-align: center;
-    font-size: 26px;
-    font-weight: 700;
-    color: #fff;
-  }
-  .container {
-    max-width: 500px;
-    margin: auto;
-    padding: 0 14px 30px;
-  }
-  .section {
-    background: #232744;
-    border-radius: 12px;
-    padding: 14px 18px;
-    margin-top: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  }
-  .section h3 {
-    margin-bottom: 8px;
-    font-weight: 600;
-    font-size: 20px;
-    border-bottom: 1px solid #444;
-    padding-bottom: 4px;
-  }
-  select, input, button {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    background: #101325;
-    color: #fff;
-    font-size: 16px;
-    margin-top: 8px;
-  }
-  #sessionTime {
-    font-size: 46px;
-    text-align: center;
-    margin-top: 16px;
-    font-weight: 700;
-    color: #ffdd59;
-  }
-  button {
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .repRow, .restRow {
-    background: #1f2135;
-    margin: 8px 0;
-    padding: 12px;
-    border-radius: 10px;
-    position: relative;
-    font-size: 16px;
-  }
-  .progressBar {
-    position:absolute; top:0; left:0; 
-    height:100%; width:0%; 
-    background: linear-gradient(90deg,#ff512f,#dd2476);
-    opacity: 0.3;
-    border-radius: 10px;
-  }
-  .calendar {
-    display: grid;
-    grid-template-columns: repeat(7,1fr);
-    gap: 4px;
-    margin-top: 10px;
-  }
-  .calendarDay {
-    text-align: center;
-    padding: 8px;
-    background: #101325;
-    border-radius: 6px;
-    font-size: 15px;
-  }
-  .calendarDay.completed {
-    background: linear-gradient(90deg,#28a745,#1db954);
-    color: #000;
-  }
-  .calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7,1fr);
-    text-align: center;
-    font-size: 14px;
-    margin-top: 6px;
-    gap: 4px;
-  }
+body {
+  margin:0;
+  font-family: 'Roboto', sans-serif;
+  background:#0f1220;
+  color:white;
+}
+header {
+  text-align:center;
+  padding:20px;
+  font-size:28px;
+  background: linear-gradient(90deg,#ff6a00,#ee0979);
+  font-weight:bold;
+}
+.card {
+  background:#15182a;
+  margin:12px;
+  padding:16px;
+  border-radius:14px;
+}
+h2,h3 {
+  margin:8px 0;
+}
+select, input[type=number] {
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  background:#101017;
+  color:white;
+  border:none;
+  margin-bottom:10px;
+}
+.repRow {
+  background:#0e1020;
+  margin:8px 0;
+  padding:12px;
+  border-radius:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:relative;
+}
+.progressBar {
+  position:absolute;
+  top:0; left:0; height:100%;
+  background: linear-gradient(90deg,#ff6a00,#ee0979);
+  opacity:0.3;
+  width:0%;
+  border-radius:10px;
+}
+input[type=checkbox] {
+  margin-left:10px;
+}
+.timer {
+  font-size:32px;
+  text-align:center;
+  margin:12px 0;
+}
+.calendar {
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+  margin:10px 12px;
+}
+.calendarDay {
+  background:#101017;
+  padding:8px;
+  border-radius:6px;
+  text-align:center;
+}
+.calendarDay.completed { background: linear-gradient(90deg,#ff6a00,#ee0979);}
+.weekdays {
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  margin:10px 12px;
+  text-align:center;
+}
+.feedback {
+  display:flex;
+  flex-direction:column;
+  margin:12px 0;
+}
+.feedback label {
+  margin-bottom:4px;
+}
+.feedback input {
+  margin-bottom:4px;
+}
 </style>
 </head>
-<body>
 
+<body>
 <header>2km Training Plan</header>
 
-<div class="container">
-  <div class="section">
-    <label>Select Day</label>
-    <select id="daySelect"></select>
-    <h2 id="dayTitle"></h2>
-    <p id="dayExplain"></p>
-  </div>
-
-  <div class="section">
-    <h3>Warm‑up</h3>
-    <ul id="warmupList"></ul>
-  </div>
-
-  <div class="section">
-    <h3>Main Session</h3>
-    <div id="mainBlock"></div>
-  </div>
-
-  <div class="section">
-    <h3>Mobility / Stretch</h3>
-    <div id="mobilityList"></div>
-  </div>
-
-  <div class="section">
-    <div id="sessionTime">00:00:00</div>
-    <button id="startSession">START</button>
-    <button id="pauseSession">PAUSE</button>
-    <button id="resetSession">RESET</button>
-  </div>
-
-  <div class="section">
-    <label>Pre‑fatigue (1‑5)</label>
-    <input id="preFatigue" type="number" min="1" max="5">
-    <small>How tired are you before training?</small>
-
-    <label>Post‑fatigue (1‑5)</label>
-    <input id="postFatigue" type="number" min="1" max="5">
-    <small>How tired after training?</small>
-  </div>
-
-  <div class="section">
-    <h3>Calendar</h3>
-    <div class="calendar-days">
-      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-    </div>
-    <div id="calendar" class="calendar"></div>
-  </div>
+<div class="card">
+  <select id="daySelect"></select>
+  <h2 id="dayTitle"></h2>
+  <p id="dayExplain"></p>
 </div>
 
-<script src="./app.js"></script>
+<div class="card">
+  <h3>Warm-up</h3>
+  <ul id="warmupList"></ul>
+</div>
+
+<div class="card">
+  <h3>Main Session</h3>
+  <div class="timer" id="sessionTime">00:00</div>
+  <div id="mainBlock"></div>
+  <button id="startSession">Start</button>
+  <button id="pauseSession">Pause</button>
+  <button id="resetSession">Reset</button>
+</div>
+
+<div class="card">
+  <h3>Mobility / Cooldown</h3>
+  <div id="mobilityList"></div>
+</div>
+
+<div class="card feedback">
+  <label>Pre-Workout Fatigue (1-5)</label>
+  <input type="number" id="preFatigue" min="1" max="5">
+  <label>Post-Workout Fatigue (1-5)</label>
+  <input type="number" id="postFatigue" min="1" max="5">
+</div>
+
+<div class="weekdays">
+  <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+</div>
+<div class="calendar" id="calendar"></div>
+
+<script src="app.js"></script>
 </body>
 </html>
