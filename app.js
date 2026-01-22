@@ -22,15 +22,57 @@ let sessionInterval;
 let currentRepIndex = 0;
 let repTimer;
 
+// ------------------------
+// Full training plan with rest and description
+// ------------------------
 const plan = {
-  Monday: {title:"Intervals", explain:`6 × 400m @ ${goalKph} kph (full effort)`, warmup:["10 min easy jog","Dynamic mobility"], main:[{text:`400m fast @ ${goalKph} kph`, reps:6, duration:Math.round((0.4/goalDistance)*goalTimeSec), rest:20}], mobility:["Hip flexor stretch – 60 sec","Calf stretch – 60 sec"]},
-  Tuesday:{title:"Tempo Run", explain:`25 min @ ${(goalKph*0.85).toFixed(1)} kph`, warmup:["10 min easy jog"], main:[{text:"25 min tempo run", duration:25*60}], mobility:["Hamstring stretch – 60 sec"]},
-  Wednesday:{title:"Recovery", explain:"Easy aerobic run", warmup:["5 min walk"], main:[{text:"20 min easy run", duration:20*60}], mobility:["Full body mobility flow – 10 min"]},
-  Thursday:{title:"VO₂ Max / Hill Sprint", explain:"Choose VO₂ Max or Hill Sprint", warmup:["10 min jog","Running drills"], mainVO2:[{text:`500m @ ${(goalKph*1.1).toFixed(1)} kph`, reps:5, duration:Math.round((0.5/goalDistance)*goalTimeSec*0.9), rest:120}], mainHill:[{text:`Hill sprint 60m`, reps:6, duration:15, rest:60}], mobility:["Quad stretch – 60 sec"]},
-  Friday:{title:"Endurance", explain:"35 min easy run + 4 × 1 min strides", warmup:["10 min easy jog"], main:[{text:"35 min easy run @ 10 kph", duration:35*60},{text:"1 min strides @ 12-14 kph", reps:4, duration:60, rest:30}], mobility:["Foam rolling – 10 min"]},
-  Saturday:{title:"Race Simulation", explain:`Broken 2km @ ${goalKph} kph`, warmup:["10 min jog"], main:[{text:`1km steady @ ${(goalKph*0.95).toFixed(1)} kph`, duration:300},{text:"Recovery 2 min", duration:120},{text:`500m fast @ ${goalKph} kph`, duration:150},{text:`2 × 400m fast finish @ ${(goalKph*1.05).toFixed(1)} kph`, reps:2, duration:120, rest:60}], mobility:["Hip flexor stretch – 60 sec"]}
+  Monday: {
+    title:"Intervals",
+    explain:`6 × 400m @ ${goalKph} kph (full effort), with 20 sec rest between reps. Focus on maintaining target speed, good running form, and consistent pacing.`,
+    warmup:["10 min easy jog","Dynamic mobility (hips, calves, ankles)"],
+    main:[{text:`400m fast @ ${goalKph} kph`, reps:6, duration:Math.round((0.4/goalDistance)*goalTimeSec), rest:20}],
+    mobility:["Hip flexor stretch – 60 sec","Calf stretch – 60 sec"]
+  },
+  Tuesday: {
+    title:"Tempo Run",
+    explain:`25 min tempo run @ ${(goalKph*0.85).toFixed(1)} kph with 3 × 100m relaxed strides at end (30 sec rest). Focus on sustaining effort without overexerting.`,
+    warmup:["10 min easy jog"],
+    main:[{text:"25 min tempo run", duration:25*60},{text:`3 × 100m strides @ ${(goalKph*0.85).toFixed(1)} kph`, reps:3, duration:60, rest:30}],
+    mobility:["Hamstring stretch – 60 sec"]
+  },
+  Wednesday: {
+    title:"Recovery",
+    explain:"Easy aerobic run to promote recovery. Keep heart rate low and focus on relaxed, smooth running.",
+    warmup:["5 min walk"],
+    main:[{text:"20 min easy run @ 9-10 kph", duration:20*60}],
+    mobility:["Full body mobility flow – 10 min"]
+  },
+  Thursday: {
+    title:"VO₂ Max / Hill Sprint",
+    explain:"Choose VO₂ Max intervals (5 × 500m slightly faster than goal, 2 min rest) or Hill Sprints (6 × 60m, 1 min rest). Focus on intensity and running form.",
+    warmup:["10 min easy jog","Running drills"],
+    mainVO2:[{text:`500m fast @ ${(goalKph*1.1).toFixed(1)} kph`, reps:5, duration:Math.round((0.5/goalDistance)*goalTimeSec*0.9), rest:120}],
+    mainHill:[{text:`Hill sprint 60m`, reps:6, duration:15, rest:60}],
+    mobility:["Quad stretch – 60 sec"]
+  },
+  Friday: {
+    title:"Endurance + Strides",
+    explain:"35 min easy run @ 10 kph, followed by 4 × 1 min strides @ 12-14 kph (30 sec rest). Focus on maintaining relaxed pace and consistent stride mechanics.",
+    warmup:["10 min easy jog"],
+    main:[{text:"35 min easy run @ 10 kph", duration:35*60},{text:"1 min strides @ 12-14 kph", reps:4, duration:60, rest:30}],
+    mobility:["Foam rolling – 10 min"]
+  },
+  Saturday: {
+    title:"Race Simulation",
+    explain:`Broken 2km race simulation: 1km steady @ ${(goalKph*0.95).toFixed(1)} kph, 2 min recovery, 500m fast @ ${goalKph} kph, then 2 × 400m fast finish @ ${(goalKph*1.05).toFixed(1)} kph (1 min rest). Focus on pacing, sprint finish, and mental toughness.`,
+    warmup:["10 min jog"],
+    main:[{text:`1km steady @ ${(goalKph*0.95).toFixed(1)} kph`, duration:300},{text:"Recovery 2 min", duration:120},{text:`500m fast @ ${goalKph} kph`, duration:150},{text:`2 × 400m fast finish @ ${(goalKph*1.05).toFixed(1)} kph`, reps:2, duration:120, rest:60}],
+    mobility:["Hip flexor stretch – 60 sec"]
+  }
 };
 
+// ------------------------
+// Utility functions
 // ------------------------
 function formatTime(sec){
   const m = Math.floor(sec/60).toString().padStart(2,"0");
@@ -38,6 +80,8 @@ function formatTime(sec){
   return `${m}:${s}`;
 }
 
+// ------------------------
+// Timer buttons
 // ------------------------
 startBtn.addEventListener("click", ()=>{
   clearInterval(sessionInterval);
@@ -61,6 +105,8 @@ resetBtn.addEventListener("click", ()=>{
   currentRepIndex = 0;
 });
 
+// ------------------------
+// Populate day dropdown
 // ------------------------
 Object.keys(plan).forEach(day=>{
   const opt = document.createElement("option");
@@ -181,4 +227,5 @@ function nextRep(reps){
   },1000);
 }
 
+// ------------------------
 renderDay("Monday");
