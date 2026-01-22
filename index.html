@@ -6,10 +6,6 @@
 <title>2km Training Plan</title>
 
 <style>
-:root {
-  --accent: #ff9800;
-}
-
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -31,12 +27,14 @@ header {
   border-radius: 14px;
 }
 
-select, button, input {
+select, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: none;
   background: #101017;
   color: white;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 8px;
 }
 
 #sessionTime {
@@ -45,41 +43,11 @@ select, button, input {
   margin: 10px 0;
 }
 
-.repRow {
+.rep {
   background: #0e1020;
+  padding: 10px;
   border-radius: 10px;
   margin: 8px 0;
-}
-
-.repRow.active {
-  outline: 2px solid var(--accent);
-}
-
-.repRow.completed {
-  outline: 2px solid #28a745;
-}
-
-.restRow {
-  text-align: center;
-  opacity: 0.7;
-  margin: 4px 0 8px;
-}
-
-.calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-}
-
-.calendarDay {
-  padding: 10px;
-  text-align: center;
-  background: #101017;
-  border-radius: 8px;
-}
-
-.calendarDay.active {
-  outline: 2px solid var(--accent);
 }
 </style>
 </head>
@@ -89,7 +57,7 @@ select, button, input {
 <header>2km Training Plan</header>
 
 <div class="section">
-  <label>Training Day</label><br>
+  <label>Day</label>
   <select id="daySelect"></select>
   <h2 id="dayTitle"></h2>
   <p id="dayExplain"></p>
@@ -101,37 +69,14 @@ select, button, input {
 </div>
 
 <div class="section">
-  <div id="sessionTime">00:00:00</div>
-  <button id="startSession">Start</button>
-  <button id="pauseSession">Pause</button>
-  <button id="resetSession">Reset</button>
+  <div id="sessionTime">00:00</div>
+  <button id="start">Start</button>
+  <button id="reset">Reset</button>
 </div>
 
 <div class="section">
   <h3>Main Session</h3>
   <div id="mainBlock"></div>
-</div>
-
-<div class="section">
-  <h3>Mobility</h3>
-  <div id="mobilityList"></div>
-</div>
-
-<div class="section">
-  <h3>Fatigue</h3>
-  <div>
-    Pre (1–5):
-    <input id="preFatigue" type="number" min="1" max="5">
-  </div>
-  <div>
-    Post (1–5):
-    <input id="postFatigue" type="number" min="1" max="5">
-  </div>
-</div>
-
-<div class="section">
-  <h3>Calendar</h3>
-  <div id="calendar" class="calendar"></div>
 </div>
 
 <script src="app.js"></script>
