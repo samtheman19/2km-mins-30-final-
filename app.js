@@ -2,62 +2,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const plan = {
   Monday: {
-    explain: "400m intervals at full effort (~14.8 kph)",
-    warmup: ["10 min jog"],
-    main: [{ text: "400m @ 14.8 kph", duration: 90, reps: 6 }],
-    mobility: ["Calves, hips"]
+    explain: "6 × 400m at full effort (~14.8 kph)",
+    reps: ["400m @ 14.8 kph","400m @ 14.8 kph","400m @ 14.8 kph","400m @ 14.8 kph","400m @ 14.8 kph","400m @ 14.8 kph"]
+  },
+  Tuesday: {
+    explain: "Tempo run at ~12.5 kph for 25 minutes",
+    reps: ["25 min @ 12.5 kph","3 × 100m strides @ 13 kph"]
+  },
+  Wednesday: {
+    explain: "Easy recovery run",
+    reps: ["20 min @ 9–10 kph"]
+  },
+  Thursday: {
+    explain: "VO₂ max session",
+    reps: ["5 × 500m @ 16.2 kph"]
+  },
+  Friday: {
+    explain: "Endurance + strides",
+    reps: ["35 min @ 10 kph","4 × 1 min @ 13–14 kph"]
+  },
+  Saturday: {
+    explain: "Race simulation",
+    reps: ["1km @ 14.1 kph","500m @ 14.8 kph","2 × 400m fast"]
   }
 };
 
-const daySelect = document.getElementById("daySelect");
-const dayTitle = document.getElementById("dayTitle");
-const dayExplain = document.getElementById("dayExplain");
-const warmupList = document.getElementById("warmupList");
-const mainBlock = document.getElementById("mainBlock");
-const mobilityList = document.getElementById("mobilityList");
-const calendar = document.getElementById("calendar");
-
-Object.keys(plan).forEach(d=>{
-  const o=document.createElement("option");
-  o.value=d;o.textContent=d;
-  daySelect.appendChild(o);
-});
+const title = document.getElementById("dayTitle");
+const explain = document.getElementById("dayExplain");
+const main = document.getElementById("main");
+const buttons = document.querySelectorAll(".days button");
 
 function render(day){
-  const d=plan[day];
-  dayTitle.textContent=day;
-  dayExplain.textContent=d.explain;
+  title.textContent = day;
+  explain.textContent = plan[day].explain;
+  main.innerHTML = "";
 
-  warmupList.innerHTML="";
-  d.warmup.forEach(w=>{
-    const li=document.createElement("li");
-    li.textContent=w;
-    warmupList.appendChild(li);
+  plan[day].reps.forEach(r=>{
+    const div=document.createElement("div");
+    div.className="rep";
+    div.textContent=r;
+    main.appendChild(div);
   });
 
-  mainBlock.innerHTML="";
-  d.main.forEach(s=>{
-    for(let i=1;i<=s.reps;i++){
-      const div=document.createElement("div");
-      div.className="repRow";
-      div.innerHTML=`${s.text} (Rep ${i}/${s.reps})`;
-      mainBlock.appendChild(div);
-    }
-  });
-
-  mobilityList.innerHTML=d.mobility.join("<br>");
+  buttons.forEach(b=>b.classList.remove("active"));
+  document.querySelector(`[data-day="${day}"]`).classList.add("active");
 }
 
+// button clicks
+buttons.forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    render(btn.dataset.day);
+  });
+});
+
+// AUTO LOAD MONDAY (THIS WAS MISSING BEFORE)
 render("Monday");
-daySelect.addEventListener("change",e=>render(e.target.value));
-
-const today=new Date().getDate();
-for(let i=1;i<=31;i++){
-  const d=document.createElement("div");
-  d.className="calendarDay";
-  d.textContent=i;
-  if(i===today)d.classList.add("active");
-  calendar.appendChild(d);
-}
 
 });
