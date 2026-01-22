@@ -4,80 +4,82 @@ if ('serviceWorker' in navigator) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const goal2kmTimeSec = 480; // 8:00 goal in seconds
-  const last2kmTimeSec = 516; // 8:36 last run
-  const distance2km = 2000; // meters
-
-  const goalPaceKph = (distance2km / goal2kmTimeSec) * 3.6; // km/h
-  const lastPaceKph = (distance2km / last2kmTimeSec) * 3.6;
-
-  const beep = new Audio("https://www.soundjay.com/buttons/beep-07.wav");
+  // -----------------------
+  // Goal pace calculation
+  // -----------------------
+  const distanceKm = 2;
+  const last2kSec = 8*60 + 36; // 8:36 last run
+  const target2kSec = 8*60;    // 8:00 goal
+  const targetPaceKph = distanceKm / (target2kSec / 3600); // ≈ 15.0 kph
 
   // -----------------------
-  // 6-Day Plan
+  // Plan with reps & duration (seconds)
   // -----------------------
   const plan = {
     Monday: {
       title: "Intervals",
-      explain: `Short repetitions at goal pace (${goalPaceKph.toFixed(1)} kph) to develop speed & economy.`,
+      explain: `Short, fast repetitions at ${targetPaceKph.toFixed(1)} kph to develop speed and running economy.`,
       warmup: ["10 min easy jog", "Dynamic mobility (hips, calves, ankles)"],
       main: [
-        { text: `400 m @ ${goalPaceKph.toFixed(1)} kph`, reps: 6, duration: 98, rest: 20 }
+        { text: `400 m @ ${targetPaceKph.toFixed(1)} kph`, reps: 6, duration: Math.round(400 / (targetPaceKph/3.6)), rest: 20 }
       ],
       mobility: ["Hip flexor stretch – 60 sec", "Calf stretch – 60 sec"]
     },
+
     Tuesday: {
       title: "Tempo Run",
-      explain: `Sustained tempo run 20–25 min at ${ (goalPaceKph - 1).toFixed(1) } kph. Strides 100 m at ${ (goalPaceKph + 1).toFixed(1) } kph.`,
+      explain: `Sustained effort for 20–25 min at ${Math.round(targetPaceKph*0.85)} kph to improve lactate threshold. Strides at ~${Math.round(targetPaceKph*1.0)} kph.`,
       warmup: ["10 min easy jog"],
       main: [
-        { text: "Continuous tempo run", duration: 1500 },
-        { text: "Relaxed strides", reps: 3, duration: 60, rest: 30 }
+        { text: `Tempo run 20–25 min`, duration: 1500 },
+        { text: `Relaxed strides 3×100 m`, reps: 3, duration: 60, rest: 30 }
       ],
       mobility: ["Hamstring stretch – 60 sec"]
     },
+
     Wednesday: {
       title: "Recovery",
-      explain: "Low intensity aerobic work to promote recovery & maintain form.",
+      explain: "Low intensity aerobic work to promote recovery and maintain form.",
       warmup: ["5 min brisk walk"],
       main: [
-        { text: `Easy run 20 min (~${ (goalPaceKph - 2).toFixed(1) } kph)`, duration: 1200 }
+        { text: "Easy run / cross-training", duration: 1200 }
       ],
       mobility: ["Full body mobility flow – 10 min"]
     },
+
     Thursday: {
-      title: "Thursday Workout",
-      explain: "Choose between VO₂ Max or Hill Sprint session.",
+      title: "VO₂ Max Intervals",
+      explain: `Choose your session: VO₂ max or Hill Sprints`,
       warmup: ["10 min easy jog", "Running drills"],
-      options: {
-        "VO₂ Max": [
-          { text: `500 m @ VO₂ Max (~${ (goalPaceKph*1.1).toFixed(1)} kph)`, reps: 5, duration: 60, rest: 120 }
-        ],
-        "Hill Sprint": [
-          { text: "Hill sprint 60 m @ maximal effort 1:6 gradient", reps: 5, duration: 15, rest: 60 }
-        ]
-      },
+      mainVO2: [
+        { text: `500 m @ ${Math.round(targetPaceKph*1.05)} kph`, reps: 5, duration: Math.round(500 / ((targetPaceKph*1.05)/3.6)), rest: 120 }
+      ],
+      mainHill: [
+        { text: "60 m hill sprint – full effort", reps: 6, duration: 6, rest: 90 }
+      ],
       mobility: ["Quad stretch – 60 sec"]
     },
+
     Friday: {
       title: "Endurance + Strides",
-      explain: `Easy aerobic run 30–40 min (~${ (goalPaceKph - 2).toFixed(1)} kph) with 4 × 100 m strides at ~${ (goalPaceKph + 1).toFixed(1)} kph.`,
+      explain: `Easy run 30–40 min at ${Math.round(targetPaceKph*0.75)} kph with 4 × 100 m strides at ~${Math.round(targetPaceKph*1.0)} kph.`,
       warmup: ["5–10 min easy jog"],
       main: [
-        { text: "Easy run", duration: 1800 },
-        { text: "Strides 100 m", reps: 4, duration: 60, rest: 30 }
+        { text: "Easy run 30–40 min", duration: 1800 },
+        { text: "Strides 4×100 m", reps: 4, duration: 60, rest: 30 }
       ],
       mobility: ["Foam rolling – 10 min"]
     },
+
     Saturday: {
       title: "Race Simulation",
-      explain: `Broken race effort: 1 km slightly slower (~${ (goalPaceKph - 0.5).toFixed(1)} kph), then 500 m at goal pace (${goalPaceKph.toFixed(1)} kph) and 2 × 400 m fast finish.`,
+      explain: `Practice broken race pace: target ${targetPaceKph.toFixed(1)} kph for each segment.`,
       warmup: ["10 min easy jog"],
       main: [
-        { text: "1 km slightly slower than goal", duration: 300 },
+        { text: "1 km slightly slower than goal pace", duration: 300 },
         { text: "Recovery", duration: 120 },
-        { text: "500 m at goal pace", duration: 150 },
-        { text: "Fast finish", reps: 2, duration: 120, rest: 60 }
+        { text: `500 m @ ${targetPaceKph.toFixed(1)} kph`, duration: 150 },
+        { text: "Fast finish 2×400 m", reps: 2, duration: 120, rest: 60 }
       ],
       mobility: ["Hip flexor stretch – 60 sec"]
     }
@@ -97,6 +99,51 @@ document.addEventListener("DOMContentLoaded", () => {
   const startSession = document.getElementById("startSession");
   const pauseSession = document.getElementById("pauseSession");
   const resetSession = document.getElementById("resetSession");
+  const preFatigue = document.getElementById("preFatigue");
+  const postFatigue = document.getElementById("postFatigue");
+  const calendarBlock = document.getElementById("calendarBlock");
+
+  const beep = new Audio("https://www.soundjay.com/buttons/beep-07.wav");
+
+  // -----------------------
+  // Session Timer
+  // -----------------------
+  let sessionSeconds = 0;
+  let sessionInterval;
+
+  startSession.addEventListener("click", () => {
+    clearInterval(sessionInterval);
+    sessionInterval = setInterval(() => {
+      sessionSeconds++;
+      sessionTime.textContent = formatHMS(sessionSeconds);
+    }, 1000);
+    beep.play();
+    startIntervalTimers();
+  });
+
+  pauseSession.addEventListener("click", () => clearInterval(sessionInterval));
+  resetSession.addEventListener("click", () => {
+    clearInterval(sessionInterval);
+    sessionSeconds = 0;
+    sessionTime.textContent = formatHMS(sessionSeconds);
+    document.querySelectorAll(".repRow input[type=checkbox]").forEach(cb => cb.checked = false);
+    document.querySelectorAll(".timerSpan").forEach(span => {
+      const dur = parseInt(span.getAttribute("data-duration")) || 0;
+      span.textContent = formatTime(dur);
+    });
+  });
+
+  function formatHMS(sec) {
+    const h = Math.floor(sec / 3600).toString().padStart(2, "0");
+    const m = Math.floor((sec % 3600) / 60).toString().padStart(2, "0");
+    const s = (sec % 60).toString().padStart(2, "0");
+    return `${h}:${m}:${s}`;
+  }
+  function formatTime(sec) {
+    const m = Math.floor(sec / 60).toString().padStart(2, "0");
+    const s = (sec % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  }
 
   // -----------------------
   // Populate Day Selector
@@ -109,157 +156,161 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // -----------------------
-  // Formatters
-  // -----------------------
-  function formatHMS(sec){
-    const h = Math.floor(sec/3600).toString().padStart(2,"0");
-    const m = Math.floor((sec%3600)/60).toString().padStart(2,"0");
-    const s = (sec%60).toString().padStart(2,"0");
-    return `${h}:${m}:${s}`;
-  }
-  function formatTime(sec){
-    const m = Math.floor(sec/60).toString().padStart(2,"0");
-    const s = (sec%60).toString().padStart(2,"0");
-    return `${m}:${s}`;
-  }
-
-  // -----------------------
   // Render Day
   // -----------------------
-  function renderDay(day){
+  function renderDay(day) {
     const data = plan[day];
     dayTitle.textContent = day;
+
+    // Only Thursday has drop-down
+    let mainSet = data.main;
+    if(day === "Thursday") {
+      const selectVO2 = document.createElement("select");
+      const opt1 = document.createElement("option");
+      opt1.value="VO2";
+      opt1.textContent="VO₂ Max Intervals";
+      const opt2 = document.createElement("option");
+      opt2.value="Hill";
+      opt2.textContent="Hill Sprints";
+      selectVO2.appendChild(opt1);
+      selectVO2.appendChild(opt2);
+      mainBlock.innerHTML = "";
+      mainBlock.appendChild(selectVO2);
+      selectVO2.addEventListener("change", e => {
+        renderMainSet(data, e.target.value);
+      });
+      renderMainSet(data, "VO2");
+    } else {
+      renderMainSet(data);
+    }
+
+    // Explanation card
     dayExplain.innerHTML = `<div class="cardTitle">${data.title}</div><div class="muted">${data.explain}</div>`;
 
     // Warm-up
-    warmupList.innerHTML="";
-    data.warmup.forEach(item=>{
-      const li=document.createElement("li");
-      li.textContent=item;
+    warmupList.innerHTML = "";
+    data.warmup.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
       warmupList.appendChild(li);
     });
 
-    // Main sets
-    mainBlock.innerHTML="";
-
-    if(day==="Thursday" && data.options){
-      const optionSelect=document.createElement("select");
-      Object.keys(data.options).forEach(opt=>{
-        const o=document.createElement("option");
-        o.value=opt;
-        o.textContent=opt;
-        optionSelect.appendChild(o);
-      });
-      optionSelect.addEventListener("change", e=>{
-        renderThursdayMain(day,e.target.value);
-      });
-      mainBlock.appendChild(optionSelect);
-      renderThursdayMain(day,optionSelect.value);
-    } else {
-      data.main.forEach(set=>renderRepRow(set));
-    }
-
     // Mobility
-    mobilityList.innerHTML="";
-    data.mobility.forEach(item=>{
-      const div=document.createElement("div");
-      div.textContent=item;
+    mobilityList.innerHTML = "";
+    data.mobility.forEach(item => {
+      const div = document.createElement("div");
+      div.textContent = item;
       mobilityList.appendChild(div);
     });
 
     // Feedback
-    feedbackBlock.innerHTML=`<div class="card"><div class="cardTitle">Feedback</div>
-      <label>Fatigue before:<input type="range" min="1" max="10"/></label>
-      <label>Fatigue after:<input type="range" min="1" max="10"/></label>
+    feedbackBlock.innerHTML = `<div class="card"><div class="cardTitle">Session Feedback</div>
+      <div>Pre-session fatigue: <span id="preFatigueText">-</span></div>
+      <div>Post-session fatigue: <span id="postFatigueText">-</span></div>
     </div>`;
+
+    updateCalendar();
   }
 
-  function renderThursdayMain(day,option){
-    mainBlock.querySelectorAll(".repRow,.restRow").forEach(r=>r.remove());
-    const sets=plan[day].options[option];
-    sets.forEach(set=>renderRepRow(set));
-  }
+  // -----------------------
+  // Render main set
+  // -----------------------
+  function renderMainSet(data, type="") {
+    mainBlock.innerHTML = "";
+    const main = (type==="Hill") ? data.mainHill : (type==="VO2") ? data.mainVO2 : data.main;
 
-  function renderRepRow(set){
-    const reps=set.reps||1;
-    for(let i=1;i<=reps;i++){
-      const div=document.createElement("div");
-      div.className="repRow";
-      div.innerHTML=`<span class="repText">${set.text} (Rep ${i}/${reps})</span>
-        <span class="timerSpan" data-duration="${set.duration}">${formatTime(set.duration)}</span>
-        <input type="checkbox"/>`;
-      mainBlock.appendChild(div);
-      if(set.rest){
-        const restDiv=document.createElement("div");
-        restDiv.className="restRow";
-        restDiv.innerHTML=`<span>Rest</span><span>${formatTime(set.rest)}</span>`;
-        mainBlock.appendChild(restDiv);
+    main.forEach(set => {
+      const reps = set.reps || 1;
+      for (let i=1; i<=reps; i++) {
+        const div = document.createElement("div");
+        div.className="repRow";
+        div.innerHTML = `
+          <span class="repText">${set.text} (Rep ${i}/${reps})</span>
+          <span class="timerSpan" data-duration="${set.duration}">${formatTime(set.duration)}</span>
+          <input type="checkbox" />
+        `;
+        mainBlock.appendChild(div);
+        if(set.rest) {
+          const restDiv = document.createElement("div");
+          restDiv.className="restRow";
+          restDiv.textContent = `Rest ${formatTime(set.rest)}`;
+          mainBlock.appendChild(restDiv);
+        }
       }
-    }
-  }
-
-  // -----------------------
-  // Session Timer
-  // -----------------------
-  let sessionSeconds=0;
-  let sessionInterval;
-  startSession.addEventListener("click", ()=>{
-    clearInterval(sessionInterval);
-    sessionInterval=setInterval(()=>{
-      sessionSeconds++;
-      sessionTime.textContent=formatHMS(sessionSeconds);
-    },1000);
-    beep.play();
-    startIntervalTimers();
-  });
-  pauseSession.addEventListener("click", ()=>clearInterval(sessionInterval));
-  resetSession.addEventListener("click", ()=>{
-    clearInterval(sessionInterval);
-    sessionSeconds=0;
-    sessionTime.textContent=formatHMS(sessionSeconds);
-    document.querySelectorAll(".repRow input[type=checkbox]").forEach(cb=>cb.checked=false);
-    document.querySelectorAll(".timerSpan").forEach(span=>{
-      const dur=parseInt(span.getAttribute("data-duration"))||0;
-      span.textContent=formatTime(dur);
     });
-  });
+  }
 
   // -----------------------
   // Interval logic
   // -----------------------
-  let currentRepIndex=0;
+  let currentRepIndex = 0;
   let intervalTimer;
-  function startIntervalTimers(){
+  function startIntervalTimers() {
     clearInterval(intervalTimer);
-    const repRows=Array.from(mainBlock.querySelectorAll(".repRow"));
-    currentRepIndex=0;
+    const repRows = Array.from(mainBlock.querySelectorAll(".repRow"));
+    currentRepIndex = 0;
     runNextRep(repRows);
   }
-  function runNextRep(repRows){
-    if(currentRepIndex>=repRows.length) return;
-    const row=repRows[currentRepIndex];
-    const timerSpan=row.querySelector(".timerSpan");
-    const cb=row.querySelector("input[type=checkbox]");
-    let sec=parseInt(timerSpan.getAttribute("data-duration"));
+  function runNextRep(repRows) {
+    if(currentRepIndex >= repRows.length) return;
+    const row = repRows[currentRepIndex];
+    const timerSpan = row.querySelector(".timerSpan");
+    const cb = row.querySelector("input[type=checkbox]");
+    let sec = parseInt(timerSpan.getAttribute("data-duration"));
     beep.play();
-    intervalTimer=setInterval(()=>{
+
+    intervalTimer = setInterval(() => {
       sec--;
-      timerSpan.textContent=formatTime(sec);
-      if(sec<=0){
+      timerSpan.textContent = formatTime(sec);
+      row.classList.add("activeRep");
+      if(sec <= 0) {
         clearInterval(intervalTimer);
         beep.play();
-        cb.checked=true;
+        cb.checked = true;
+        row.classList.remove("activeRep");
         row.classList.add("completed");
         currentRepIndex++;
         runNextRep(repRows);
       }
-    },1000);
+    }, 1000);
+  }
+
+  // -----------------------
+  // Calendar visual
+  // -----------------------
+  function updateCalendar() {
+    calendarBlock.innerHTML = "";
+    const today = new Date();
+    const start = new Date(today.getFullYear(), today.getMonth(), 1);
+    const end = new Date(today.getFullYear(), today.getMonth()+1, 0);
+    const table = document.createElement("table");
+    const trHead = document.createElement("tr");
+    ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d=>{
+      const th = document.createElement("th");
+      th.textContent=d;
+      trHead.appendChild(th);
+    });
+    table.appendChild(trHead);
+    let tr = document.createElement("tr");
+    for(let i=0;i<start.getDay();i++) tr.appendChild(document.createElement("td"));
+    for(let d=1; d<=end.getDate(); d++) {
+      if(tr.children.length>=7) {
+        table.appendChild(tr);
+        tr=document.createElement("tr");
+      }
+      const td=document.createElement("td");
+      td.textContent=d;
+      if(d===today.getDate()) td.style.background="#6fd3ff";
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+    calendarBlock.appendChild(table);
   }
 
   // -----------------------
   // Init
   // -----------------------
   renderDay("Monday");
-  daySelect.addEventListener("change", e=>renderDay(e.target.value));
+  daySelect.addEventListener("change", e => renderDay(e.target.value));
 
 });
