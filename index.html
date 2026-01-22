@@ -1,56 +1,57 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b0b0f">
-<title>2 km −30s Speed Plan</title>
-
-<style>
-:root{
-  --bg:#0b0b0f;
-  --card:#15151c;
-  --card2:#101017;
-  --muted:#9aa0a6;
-  --text:#ffffff;
-  --accent:#6fd3ff;
-  --line:rgba(255,255,255,.08);
-  --pill:rgba(255,255,255,.06);
-}
-*{box-sizing:border-box;}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;}
-.app{max-width:460px;margin:0 auto;padding:18px 14px 34px;}
-h1{margin:4px 0 14px;font-size:28px;}
-.sub{color:var(--muted);font-size:13px;}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-.chip{background:var(--pill);padding:10px 12px;border-radius:14px;}
-select{background:#101017;color:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;}
-.card{background:#15151c;border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0;}
-.cardTitle{font-size:18px;font-weight:800;}
-.dayTitle{font-size:22px;font-weight:900;}
-.muted{color:var(--muted);}
-.repRow{display:flex;align-items:center;justify-content:space-between;margin:6px 0;}
-.timerSpan{width:50px;text-align:right;font-variant-numeric:tabular-nums;}
-input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent);}
-.restRow{font-size:12px;margin-left:6px;color:var(--muted);}
-.calendarDay{width:40px;height:40px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;position:relative;cursor:pointer;margin:2px;}
-.calendarDay.notDone{background:#555;}
-.calendarDay.started{background:#6fd3ff;}
-.calendarDay.completed{background:#2ecc71;}
-.calendarDay span{position:absolute;bottom:2px;font-size:8px;}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b0f" />
+  <title>2km −30s Speed Plan</title>
+  <style>
+    :root{
+      --bg:#0b0b0f;
+      --card:#15151c;
+      --card2:#101017;
+      --muted:#9aa0a6;
+      --text:#ffffff;
+      --accent:#6fd3ff;
+      --line:rgba(255,255,255,.08);
+      --pill:rgba(255,255,255,.06);
+      --green:#4caf50;
+      --yellow:#ffca28;
+      --gray:#555;
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;}
+    .app{max-width:460px;margin:0 auto;padding:18px 14px 34px;}
+    h1{margin:4px 0 14px;font-size:28px;}
+    .sub{color:var(--muted);font-size:13px;margin-bottom:12px;}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+    .chip{background:var(--pill);padding:10px 12px;border-radius:14px;}
+    select{background:var(--card2);color:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0;}
+    .cardTitle{font-size:18px;font-weight:800;}
+    .dayTitle{font-size:22px;font-weight:900;margin-bottom:6px;}
+    .muted{color:var(--muted);}
+    .repRow{display:flex;justify-content:space-between;align-items:center;margin:6px 0;}
+    .repText{flex:1;}
+    .timerSpan{width:60px;text-align:center;font-variant-numeric:tabular-nums;}
+    .repRow.completed{color:var(--green);}
+    .restRow{color:var(--muted);margin-left:10px;margin-bottom:4px;font-size:12px;}
+    #calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:20px;}
+    .dayBox{background:var(--gray);color:#fff;text-align:center;padding:8px;border-radius:6px;font-size:12px;cursor:pointer;}
+    .dayBox.inProgress{background:var(--yellow);}
+    .dayBox.completed{background:var(--green);}
+    .fatigueRow{display:flex;gap:6px;margin-top:6px;}
+    .fatigueInput{width:50px;padding:4px;border-radius:6px;border:1px solid var(--line);background:var(--card2);color:#fff;}
+  </style>
 </head>
 
 <body>
 <div class="app">
-  <h1>2 km −30s Speed Plan</h1>
-  <div class="sub">Scientifically-based · 3-week block · Goal: 8:00 min</div>
+  <h1>2km −30s Speed Plan</h1>
+  <div class="sub">3-week block · Scientifically-based · Target: 8:00 min 2km</div>
 
   <div class="row">
-    <div class="chip">
-      <strong>Day</strong>
-      <select id="daySelect"></select>
-    </div>
+    <div class="chip"><strong>Day</strong> <select id="daySelect"></select></div>
   </div>
 
   <div class="card" id="dayCard">
@@ -68,16 +69,32 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent);}
       <summary>Mobility</summary>
       <div id="mobilityList"></div>
     </details>
+
+    <div class="card">
+      <div class="cardTitle">Session Timer</div>
+      <div class="row">
+        <button id="startSession">Start</button>
+        <button id="pauseSession">Pause</button>
+        <button id="resetSession">Reset</button>
+        <span id="sessionTime">00:00:00</span>
+      </div>
+    </div>
+
+    <div class="card" id="feedbackBlock">
+      <div class="cardTitle">Feedback</div>
+      <div class="row fatigueRow">
+        <label>Pre fatigue</label><input type="number" id="preFatigue" class="fatigueInput" min="1" max="10">
+        <label>Post fatigue</label><input type="number" id="postFatigue" class="fatigueInput" min="1" max="10">
+      </div>
+    </div>
   </div>
 
-  <div class="card" id="feedbackBlock"></div>
-
-  <div class="calendarCard card" id="calendarCard">
-    <div class="cardTitle">Training Calendar 🗓️</div>
-    <div id="calendarBlock" style="display:flex; flex-wrap:wrap;"></div>
+  <div class="card">
+    <div class="cardTitle">Calendar</div>
+    <div id="calendar"></div>
   </div>
 </div>
 
-<script src="app.js?v=1"></script>
+<script src="app.js?v=1000"></script>
 </body>
 </html>
