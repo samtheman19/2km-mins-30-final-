@@ -163,14 +163,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Main block
     mainBlock.innerHTML="";
-    let mainData = data.main;
-    if(day==="Thursday"){ // show dropdown for VO2/Hill
+    if(day==="Thursday"){ 
+      // Highlighted dropdown for Thursday
+      const container = document.createElement("div");
+      container.className = "thursdayDropdown";
+      container.style.background = "#222";
+      container.style.padding = "10px";
+      container.style.borderRadius = "12px";
+      container.style.marginBottom = "10px";
+      container.style.border = "2px solid var(--accent)";
+
+      const label = document.createElement("div");
+      label.textContent = "Select Thursday Workout:";
+      label.style.color = "var(--accent)";
+      label.style.fontWeight = "bold";
+      label.style.marginBottom = "6px";
+      container.appendChild(label);
+
       const dropdown = document.createElement("select");
       dropdown.innerHTML=`<option value="VO2">VO₂ Max</option><option value="Hill">Hill Sprint</option>`;
+      dropdown.style.padding = "6px 10px";
+      dropdown.style.borderRadius = "8px";
+      dropdown.style.background = "#101017";
+      dropdown.style.color = "#fff";
       dropdown.addEventListener("change", e=>{
         renderMainBlocks(day,e.target.value);
       });
-      mainBlock.appendChild(dropdown);
+      container.appendChild(dropdown);
+
+      mainBlock.appendChild(container);
       renderMainBlocks(day,"VO2");
     } else {
       renderMainBlocks(day);
@@ -184,7 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
       mobilityList.appendChild(div);
     });
 
-    // Update calendar
     renderCalendar();
   }
 
