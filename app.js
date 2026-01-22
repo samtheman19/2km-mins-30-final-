@@ -23,33 +23,33 @@ let currentRepIndex = 0;
 let repTimer;
 
 // ------------------------
-// Full training plan with rest and description
+// Full training plan
 // ------------------------
 const plan = {
   Monday: {
     title:"Intervals",
-    explain:`6 × 400m @ ${goalKph} kph (full effort), with 20 sec rest between reps. Focus on maintaining target speed, good running form, and consistent pacing.`,
+    explain:`6 × 400m @ ${goalKph} kph (full effort), rest 20s between reps. Maintain target speed, form, and consistent pacing.`,
     warmup:["10 min easy jog","Dynamic mobility (hips, calves, ankles)"],
     main:[{text:`400m fast @ ${goalKph} kph`, reps:6, duration:Math.round((0.4/goalDistance)*goalTimeSec), rest:20}],
     mobility:["Hip flexor stretch – 60 sec","Calf stretch – 60 sec"]
   },
   Tuesday: {
     title:"Tempo Run",
-    explain:`25 min tempo run @ ${(goalKph*0.85).toFixed(1)} kph with 3 × 100m relaxed strides at end (30 sec rest). Focus on sustaining effort without overexerting.`,
+    explain:`25 min @ ${(goalKph*0.85).toFixed(1)} kph, finish with 3 × 100m strides (30s rest). Focus on sustained effort and relaxed form.`,
     warmup:["10 min easy jog"],
     main:[{text:"25 min tempo run", duration:25*60},{text:`3 × 100m strides @ ${(goalKph*0.85).toFixed(1)} kph`, reps:3, duration:60, rest:30}],
     mobility:["Hamstring stretch – 60 sec"]
   },
   Wednesday: {
     title:"Recovery",
-    explain:"Easy aerobic run to promote recovery. Keep heart rate low and focus on relaxed, smooth running.",
+    explain:"Easy 20 min run @ 9-10 kph to promote recovery and maintain form.",
     warmup:["5 min walk"],
     main:[{text:"20 min easy run @ 9-10 kph", duration:20*60}],
     mobility:["Full body mobility flow – 10 min"]
   },
   Thursday: {
     title:"VO₂ Max / Hill Sprint",
-    explain:"Choose VO₂ Max intervals (5 × 500m slightly faster than goal, 2 min rest) or Hill Sprints (6 × 60m, 1 min rest). Focus on intensity and running form.",
+    explain:"Choose VO₂ Max (5 × 500m fast, 2 min rest) or Hill Sprints (6 × 60m, 1 min rest). Focus on intensity and form.",
     warmup:["10 min easy jog","Running drills"],
     mainVO2:[{text:`500m fast @ ${(goalKph*1.1).toFixed(1)} kph`, reps:5, duration:Math.round((0.5/goalDistance)*goalTimeSec*0.9), rest:120}],
     mainHill:[{text:`Hill sprint 60m`, reps:6, duration:15, rest:60}],
@@ -57,14 +57,14 @@ const plan = {
   },
   Friday: {
     title:"Endurance + Strides",
-    explain:"35 min easy run @ 10 kph, followed by 4 × 1 min strides @ 12-14 kph (30 sec rest). Focus on maintaining relaxed pace and consistent stride mechanics.",
+    explain:"35 min easy run @ 10 kph, then 4 × 1 min strides @ 12-14 kph (30s rest). Focus on relaxed stride mechanics.",
     warmup:["10 min easy jog"],
     main:[{text:"35 min easy run @ 10 kph", duration:35*60},{text:"1 min strides @ 12-14 kph", reps:4, duration:60, rest:30}],
     mobility:["Foam rolling – 10 min"]
   },
   Saturday: {
     title:"Race Simulation",
-    explain:`Broken 2km race simulation: 1km steady @ ${(goalKph*0.95).toFixed(1)} kph, 2 min recovery, 500m fast @ ${goalKph} kph, then 2 × 400m fast finish @ ${(goalKph*1.05).toFixed(1)} kph (1 min rest). Focus on pacing, sprint finish, and mental toughness.`,
+    explain:`Broken 2km race: 1km steady @ ${(goalKph*0.95).toFixed(1)} kph, 2 min recovery, 500m fast, 2 × 400m finish @ ${(goalKph*1.05).toFixed(1)} kph (1 min rest).`,
     warmup:["10 min jog"],
     main:[{text:`1km steady @ ${(goalKph*0.95).toFixed(1)} kph`, duration:300},{text:"Recovery 2 min", duration:120},{text:`500m fast @ ${goalKph} kph`, duration:150},{text:`2 × 400m fast finish @ ${(goalKph*1.05).toFixed(1)} kph`, reps:2, duration:120, rest:60}],
     mobility:["Hip flexor stretch – 60 sec"]
@@ -72,7 +72,7 @@ const plan = {
 };
 
 // ------------------------
-// Utility functions
+// Utility
 // ------------------------
 function formatTime(sec){
   const m = Math.floor(sec/60).toString().padStart(2,"0");
@@ -106,14 +106,21 @@ resetBtn.addEventListener("click", ()=>{
 });
 
 // ------------------------
-// Populate day dropdown
+// Populate day dropdown and auto-select today
 // ------------------------
+const weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 Object.keys(plan).forEach(day=>{
   const opt = document.createElement("option");
   opt.value = day;
   opt.textContent = day;
   daySelect.appendChild(opt);
 });
+
+const todayIndex = new Date().getDay();
+let todayName = weekdays[todayIndex];
+if(!plan[todayName]) todayName = "Monday";
+daySelect.value = todayName;
+renderDay(todayName);
 
 daySelect.addEventListener("change", e=> renderDay(e.target.value));
 
@@ -135,7 +142,6 @@ function renderDay(day){
   mainBlock.innerHTML="";
   if(day==="Thursday"){
     const thDiv=document.createElement("div");
-    thDiv.className="thursdayDropdown";
     const label = document.createElement("div");
     label.textContent="Select Thursday Workout:";
     label.style.color="#fff";
@@ -163,6 +169,7 @@ function renderDay(day){
   });
 
   currentRepIndex = 0;
+  renderCalendar();
 }
 
 // ------------------------
@@ -228,4 +235,32 @@ function nextRep(reps){
 }
 
 // ------------------------
-renderDay("Monday");
+// Calendar
+// ------------------------
+function renderCalendar(){
+  const calendarDiv = document.getElementById("calendar");
+  calendarDiv.innerHTML="";
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const daysInMonth = new Date(year, month+1,0).getDate();
+
+  const monthKey = `${year}-${month+1}`;
+  let completionData = JSON.parse(localStorage.getItem(monthKey)) || {};
+
+  for(let i=1; i<=daysInMonth; i++){
+    const div = document.createElement("div");
+    div.className = "calendarDay";
+    div.textContent = i;
+
+    if(i === today.getDate()) div.classList.add("today");
+
+    if(completionData[i] && completionData[i].completed){
+      div.classList.add("completed");
+      div.title = `Workout done. Pre: ${completionData[i].pre}, Post: ${completionData[i].post}`;
+    }
+
+    calendarDiv.appendChild(div);
+  }
+}
