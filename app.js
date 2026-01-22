@@ -119,6 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sessionTime.textContent=formatHMS(sessionSeconds);
     document.querySelectorAll(".repRow input[type=checkbox]").forEach(cb=>cb.checked=false);
     document.querySelectorAll(".repRow").forEach(r=>r.classList.remove("active","completed"));
+    document.querySelectorAll(".repRow div:first-child").forEach(bar=>bar.style.width="0%");
   });
 
   function formatHMS(sec){
@@ -162,7 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Main block
     mainBlock.innerHTML="";
     if(day==="Thursday"){
-      // Thursday dropdown
       const container=document.createElement("div");
       container.className="thursdayDropdown";
       container.style.background="#222";
@@ -211,19 +211,44 @@ document.addEventListener("DOMContentLoaded", () => {
     let sets=plan[day];
     let mainData=sets.main;
     if(day==="Thursday") mainData=(type==="VO2")? sets.mainVO2 : sets.mainHill;
-    mainData.forEach(set=>{
-      const reps=set.reps||1;
-      for(let i=1;i<=reps;i++){
-        const div=document.createElement("div");
-        div.className="repRow";
-        div.innerHTML=`<span>${set.text} (Rep ${i}/${reps})</span>
-                       <span class="timerSpan" data-duration="${set.duration}">${formatTime(set.duration)}</span>
-                       <input type="checkbox"/>`;
+
+    mainData.forEach(set => {
+      const reps = set.reps || 1;
+      for (let i = 1; i <= reps; i++) {
+        const div = document.createElement("div");
+        div.className = "repRow";
+        div.style.position = "relative";
+        div.style.overflow = "hidden";
+
+        const progressBar = document.createElement("div");
+        progressBar.style.position="absolute";
+        progressBar.style.top="0";
+        progressBar.style.left="0";
+        progressBar.style.height="100%";
+        progressBar.style.width="0%";
+        progressBar.style.backgroundColor="#28a745";
+        progressBar.style.opacity="0.3";
+        progressBar.style.transition="width 1s linear";
+        div.appendChild(progressBar);
+
+        const content = document.createElement("div");
+        content.style.position="relative";
+        content.style.display="flex";
+        content.style.justifyContent="space-between";
+        content.style.alignItems="center";
+        content.style.padding="8px 12px";
+        content.innerHTML = `
+          <span>${set.text} (Rep ${i}/${reps})</span>
+          <span class="timerSpan" data-duration="${set.duration}">${formatTime(set.duration)}</span>
+          <input type="checkbox"/>
+        `;
+        div.appendChild(content);
         mainBlock.appendChild(div);
-        if(set.rest){
-          const restDiv=document.createElement("div");
-          restDiv.className="restRow";
-          restDiv.textContent=`Rest ${formatTime(set.rest)}`;
+
+        if (set.rest) {
+          const restDiv = document.createElement("div");
+          restDiv.className = "restRow";
+          restDiv.textContent = `Rest ${formatTime(set.rest)}`;
           mainBlock.appendChild(restDiv);
         }
       }
@@ -252,18 +277,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const timerSpan=row.querySelector(".timerSpan");
     const cb=row.querySelector("input[type=checkbox]");
     let sec=parseInt(timerSpan.getAttribute("data-duration"));
+    const progressBar = row.querySelector("div:first-child");
     row.classList.add("active");
     beep.play();
 
     intervalTimer=setInterval(()=>{
       sec--;
       timerSpan.textContent=formatTime(sec);
+      progressBar.style.width = `${((parseInt(timerSpan.getAttribute("data-duration")) - sec)/parseInt(timerSpan.getAttribute("data-duration")))*100}%`;
+
       if(sec<=0){
         clearInterval(intervalTimer);
         beep.play();
         cb.checked=true;
         row.classList.remove("active");
         row.classList.add("completed");
+        progressBar.style.width = "100%";
         currentRepIndex++;
         runNextRep(repRows);
       }
@@ -287,7 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
       div.className="calendarDay";
       div.textContent=i;
       if(completionData[i] && completionData[i].completed){
-        div.style.background="var(--completed)";
+        div.style.background="#28a745";
         div.title=`Workout done. Pre-fatigue: ${completionData[i].pre}, Post-fatigue: ${completionData[i].post}`;
       }
       if(i===today.getDate()) div.classList.add("active");
