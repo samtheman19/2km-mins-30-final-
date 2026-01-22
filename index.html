@@ -69,6 +69,22 @@
   button:hover {
     background: #333333;
   }
+  /* Calendar */
+  #calendar { display:flex; flex-wrap:wrap; }
+  .calendarDay {
+    width: 40px;
+    height: 40px;
+    margin: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111111;
+    border-radius: 8px;
+    cursor: default;
+    font-size: 14px;
+  }
+  .calendarDay.today { border: 2px solid #ff9900; }
+  .calendarDay.completed { opacity: 0.6; text-decoration: line-through; }
 </style>
 </head>
 <body>
@@ -98,6 +114,11 @@
 <div class="card">
   <h3>Mobility / Cooldown</h3>
   <ul id="mobilityList"></ul>
+</div>
+
+<div class="card">
+  <h3>Monthly Calendar</h3>
+  <div id="calendar"></div>
 </div>
 
 <script src="app.js"></script>
