@@ -1,84 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2km Training Plan</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2km Training Plan</title>
 
-<style>
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #0f1220;
-  color: white;
-}
-
-header {
-  padding: 16px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.section {
-  background: #15182a;
-  margin: 12px;
-  padding: 14px;
-  border-radius: 14px;
-}
-
-select, button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 8px;
-  border-radius: 8px;
-  border: none;
-  background: #101017;
-  color: white;
-}
-
-#sessionTime {
-  font-size: 36px;
-  text-align: center;
-  margin: 10px 0;
-}
-
-.rep {
-  background: #0e1020;
-  padding: 10px;
-  border-radius: 10px;
-  margin: 8px 0;
-}
-</style>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f1220;
+      color: white;
+    }
+    header {
+      padding: 16px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .card {
+      background: #15182a;
+      margin: 12px;
+      padding: 14px;
+      border-radius: 14px;
+    }
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      background: #101017;
+      color: white;
+      border: none;
+      margin-bottom: 10px;
+    }
+    .rep {
+      background: #0e1020;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 8px;
+    }
+  </style>
 </head>
 
 <body>
 
 <header>2km Training Plan</header>
 
-<div class="section">
-  <label>Day</label>
+<div class="card">
   <select id="daySelect"></select>
   <h2 id="dayTitle"></h2>
   <p id="dayExplain"></p>
 </div>
 
-<div class="section">
+<div class="card">
   <h3>Warm-up</h3>
   <ul id="warmupList"></ul>
 </div>
 
-<div class="section">
-  <div id="sessionTime">00:00</div>
-  <button id="start">Start</button>
-  <button id="reset">Reset</button>
-</div>
-
-<div class="section">
+<div class="card">
   <h3>Main Session</h3>
   <div id="mainBlock"></div>
 </div>
 
+<!-- IMPORTANT: app.js MUST be in the same folder -->
 <script src="app.js"></script>
+
 </body>
 </html>
