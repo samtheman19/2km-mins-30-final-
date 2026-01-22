@@ -4,122 +4,122 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2km Training Plan</title>
-
 <style>
-  :root {
-    --bg-dark: #0f1220;
-    --card-bg: #15182a;
-    --highlight: #28a745;
-    --text-light: #eee;
-    --accent: #1e90ff;
-  }
+:root {
+  --bg-dark: #0f1220;
+  --card-bg: #15182a;
+  --highlight: #28a745;
+  --text-light: #eee;
+  --accent: #1e90ff;
+}
 
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg-dark);
-    color: var(--text-light);
-  }
+body {
+  margin:0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-light);
+}
 
-  header {
-    text-align: center;
-    padding: 16px;
-    font-size: 24px;
-    font-weight: bold;
-    border-bottom: 1px solid #222;
-  }
+header {
+  text-align:center;
+  padding:16px;
+  font-size:24px;
+  font-weight:bold;
+  border-bottom:1px solid #222;
+}
 
-  .container {
-    max-width: 500px;
-    margin: 16px auto;
-    padding: 0 12px;
-  }
+.container {
+  max-width:500px;
+  margin:16px auto;
+  padding:0 12px;
+}
 
-  select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    background: #101017;
-    color: white;
-    border: none;
-    margin-bottom: 12px;
-    font-size: 16px;
-  }
+select {
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  background:#101017;
+  color:#fff;
+  border:none;
+  margin-bottom:12px;
+  font-size:16px;
+}
 
-  .card {
-    background: var(--card-bg);
-    padding: 14px;
-    border-radius: 12px;
-    margin-bottom: 16px;
-  }
+.card {
+  background: var(--card-bg);
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:16px;
+}
 
-  h2, h3 {
-    margin: 6px 0;
-  }
+h2, h3 {
+  margin:6px 0;
+}
 
-  ul {
-    margin: 8px 0 0 20px;
-    padding: 0;
-  }
+ul {
+  margin:8px 0 0 20px;
+  padding:0;
+}
 
-  #sessionTimer {
-    text-align: center;
-    font-size: 48px;
-    margin: 12px 0;
-  }
+#sessionTimer {
+  text-align:center;
+  font-size:48px;
+  margin:12px 0;
+}
 
-  .timer-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
+.timer-buttons {
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  margin-bottom:16px;
+}
 
-  .timer-buttons button {
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: none;
-    background: var(--accent);
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-  }
+.timer-buttons button {
+  padding:8px 16px;
+  border-radius:8px;
+  border:none;
+  background: var(--accent);
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-  .repRow {
-    background: #101017;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 8px;
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+.repRow {
+  background:#101017;
+  padding:10px;
+  border-radius:8px;
+  margin-top:8px;
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-  .progressBar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background-color: var(--highlight);
-    width: 0%;
-    opacity: 0.3;
-    border-radius: 8px;
-    transition: width 1s linear;
-  }
+.progressBar {
+  position:absolute;
+  top:0;
+  left:0;
+  height:100%;
+  background-color:var(--highlight);
+  width:0%;
+  opacity:0.3;
+  border-radius:8px;
+  transition: width 1s linear;
+}
 
-  .repRow.completed {
-    opacity: 0.7;
-    text-decoration: line-through;
-  }
+.repRow.completed {
+  opacity:0.7;
+  text-decoration: line-through;
+}
 
-  .thursdayDropdown {
-    margin-bottom: 12px;
-    padding: 10px;
-    background: #222;
-    border-radius: 10px;
-    border: 2px solid var(--accent);
-  }
+.thursdayDropdown {
+  margin-bottom:12px;
+  padding:10px;
+  background:#222;
+  border-radius:10px;
+  border:2px solid var(--accent);
+}
+
 </style>
 </head>
 
@@ -161,6 +161,5 @@
 </div>
 
 <script src="app.js"></script>
-
 </body>
 </html>
