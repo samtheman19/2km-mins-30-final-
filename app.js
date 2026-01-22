@@ -1,80 +1,79 @@
-// Unregister old service workers
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(r => r.forEach(reg => reg.unregister()));
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // -----------------------------
-  // Goal pace calculations
-  // -----------------------------
-  const last2km = 516; // 8:36 = 516 seconds
-  const goal2km = 480; // 8:00 = 480 seconds
-  const pacePer400 = goal2km / 5; // 400 m split for intervals (~1:36)
-  const pacePer500 = goal2km / 4; // 500 m split (~2:00)
 
-  // -----------------------------
-  // 6-Day Training Plan
-  // -----------------------------
+  // -----------------------
+  // Goal pace calculation (based on 8:36 last 2km, target 8:00)
+  // -----------------------
+  const last2kmSec = 8*60 + 36;
+  const target2kmSec = 8*60;
+  const goalPaceSecPer100m = target2kmSec / 20; // 20 x 100m in 2km
+
+  // -----------------------
+  // 6-Day Plan with Thursday option
+  // -----------------------
   const plan = {
     Monday: {
       title: "Intervals",
-      explain: "6 × 400 m at goal 2 km pace to develop speed & running economy.",
+      explain: "6 × 400m at goal pace with short recoveries.",
       warmup: ["10 min easy jog", "Dynamic mobility (hips, calves, ankles)"],
-      main: [{ text: "400 m @ goal pace", reps: 6, duration: Math.round(pacePer400), rest: 20 }],
+      main: [{ text: "400 m @ goal pace", reps: 6, duration: Math.round(400/100*goalPaceSecPer100m), rest: 20 }],
       mobility: ["Hip flexor stretch – 60 sec", "Calf stretch – 60 sec"]
     },
     Tuesday: {
       title: "Tempo Run",
-      explain: "Sustained effort to improve lactate threshold and fatigue resistance.",
+      explain: "Sustained effort to improve lactate threshold.",
       warmup: ["10 min easy jog"],
       main: [
-        { text: "Continuous tempo run", duration: 1500 },
-        { text: "Relaxed strides", reps: 3, duration: 60, rest: 30 }
+        { text: "20 min tempo run", duration: 1200 },
+        { text: "3 × 100 m relaxed strides", reps: 3, duration: 60, rest: 30 }
       ],
       mobility: ["Hamstring stretch – 60 sec"]
     },
     Wednesday: {
       title: "Recovery",
-      explain: "Low intensity aerobic work to promote recovery and maintain form.",
+      explain: "Low intensity aerobic work to recover.",
       warmup: ["5 min brisk walk"],
-      main: [{ text: "Easy run or cross-training", duration: 1200 }],
+      main: [{ text: "20 min easy run or cross-training", duration: 1200 }],
       mobility: ["Full body mobility flow – 10 min"]
     },
     Thursday: {
-      title: "VO₂ Max / Hill Sprint",
-      explain: "Select VO₂ max intervals or hill sprints for high-intensity stimulus.",
+      title: "VO₂ Max Intervals",
+      explain: "Select VO₂ Max or Hill Sprint below.",
       warmup: ["10 min easy jog", "Running drills"],
-      mainVO2: [{ text: "500 m slightly faster than goal pace", reps: 5, duration: Math.round(pacePer500), rest: 120 }],
-      mainHill: [{ text: "Hill sprint 60 m", reps: 6, duration: 20, rest: 60 }],
+      mainVO2: [{ text: "500 m slightly faster than goal pace", reps: 5, duration: Math.round(500/100*goalPaceSecPer100m*0.95), rest: 120 }],
+      mainHill: [{ text: "Hill sprint 60 m @ max effort", reps: 6, duration: 20, rest: 90 }],
       mobility: ["Quad stretch – 60 sec"]
     },
     Friday: {
       title: "Endurance + Strides",
-      explain: "Easy aerobic running with short speed exposure to improve mechanics.",
+      explain: "Easy aerobic run with short strides.",
       warmup: ["5–10 min easy jog"],
       main: [
-        { text: "Easy run", duration: 1800 },
-        { text: "Strides", reps: 4, duration: 60, rest: 30 }
+        { text: "30 min easy run", duration: 1800 },
+        { text: "4 × 100 m strides", reps: 4, duration: 60, rest: 30 }
       ],
       mobility: ["Foam rolling – 10 min"]
     },
     Saturday: {
       title: "Race Simulation",
-      explain: "Broken race effort to practice pacing and finishing strong.",
+      explain: "Practice broken race effort and pacing.",
       warmup: ["10 min easy jog"],
       main: [
         { text: "1 km slightly slower than goal pace", duration: 300 },
-        { text: "Recovery", duration: 120 },
+        { text: "2 min recovery", duration: 120 },
         { text: "500 m at goal pace", duration: 150 },
-        { text: "Fast finish", reps: 2, duration: 120, rest: 60 }
+        { text: "2 × 400 m fast finish", reps: 2, duration: 120, rest: 60 }
       ],
       mobility: ["Hip flexor stretch – 60 sec"]
     }
   };
 
-  // -----------------------------
+  // -----------------------
   // DOM Elements
-  // -----------------------------
+  // -----------------------
   const daySelect = document.getElementById("daySelect");
   const dayTitle = document.getElementById("dayTitle");
   const dayExplain = document.getElementById("dayExplain");
@@ -82,54 +81,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const mainBlock = document.getElementById("mainBlock");
   const mobilityList = document.getElementById("mobilityList");
   const feedbackBlock = document.getElementById("feedbackBlock");
-  const sessionTime = document.getElementById("sessionTime");
-  const startSession = document.getElementById("startSession");
-  const pauseSession = document.getElementById("pauseSession");
-  const resetSession = document.getElementById("resetSession");
   const topTick = document.getElementById("topTick");
+  const calendarGrid = document.getElementById("calendarGrid");
 
   const beep = new Audio("https://www.soundjay.com/buttons/beep-07.wav");
 
-  // -----------------------------
+  // -----------------------
   // Session Timer
-  // -----------------------------
+  // -----------------------
   let sessionSeconds = 0;
   let sessionInterval;
-  startSession.addEventListener("click", () => {
+
+  function startSessionTimer() {
     clearInterval(sessionInterval);
     sessionInterval = setInterval(() => {
       sessionSeconds++;
-      sessionTime.textContent = formatHMS(sessionSeconds);
     }, 1000);
-    beep.play();
-    startIntervalTimers();
-    topTick.checked = true;
-  });
-
-  pauseSession.addEventListener("click", () => clearInterval(sessionInterval));
-  resetSession.addEventListener("click", () => {
-    clearInterval(sessionInterval);
-    sessionSeconds = 0;
-    sessionTime.textContent = formatHMS(sessionSeconds);
-    document.querySelectorAll(".repRow input[type=checkbox]").forEach(cb => cb.checked = false);
-    document.querySelectorAll(".repRow").forEach(r => r.classList.remove("completed","active"));
-  });
-
-  function formatHMS(sec){
-    const h=Math.floor(sec/3600).toString().padStart(2,"0");
-    const m=Math.floor((sec%3600)/60).toString().padStart(2,"0");
-    const s=(sec%60).toString().padStart(2,"0");
-    return `${h}:${m}:${s}`;
-  }
-  function formatTime(sec){
-    const m=Math.floor(sec/60).toString().padStart(2,"0");
-    const s=(sec%60).toString().padStart(2,"0");
-    return `${m}:${s}`;
   }
 
-  // -----------------------------
+  // -----------------------
   // Populate Day Selector
-  // -----------------------------
+  // -----------------------
   Object.keys(plan).forEach(day => {
     const opt = document.createElement("option");
     opt.value = day;
@@ -137,108 +109,105 @@ document.addEventListener("DOMContentLoaded", () => {
     daySelect.appendChild(opt);
   });
 
-  // -----------------------------
+  // -----------------------
   // Render Day
-  // -----------------------------
-  let currentRepIndex = 0;
-  let intervalTimer;
-
-  function renderDay(day){
+  // -----------------------
+  function renderDay(day) {
     const data = plan[day];
     dayTitle.textContent = day;
 
-    // Explanation
+    // Explanation card
     dayExplain.innerHTML = `<div class="cardTitle">${data.title}</div><div class="muted">${data.explain}</div>`;
 
-    // Warmup
+    // Warm-up
     warmupList.innerHTML = "";
-    data.warmup.forEach(item=>{
-      const li=document.createElement("li");
-      li.textContent=item;
+    data.warmup.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
       warmupList.appendChild(li);
     });
 
-    // Main
-    mainBlock.innerHTML="";
-    let mainData = data.main;
-    // Thursday dropdown
-    if(day==="Thursday"){
+    // Main workout
+    mainBlock.innerHTML = "";
+    let mainSets = data.main || [];
+    if(day === "Thursday"){
+      // Add VO2/Hill selector
       const select = document.createElement("select");
-      select.innerHTML=`<option value="VO2">VO₂ Max</option><option value="Hill">Hill Sprint</option>`;
-      select.addEventListener("change",()=>renderDay("Thursday")); // re-render for selected type
+      select.id = "thursdayMode";
+      const opt1 = document.createElement("option"); opt1.value="VO2"; opt1.textContent="VO₂ Max"; select.appendChild(opt1);
+      const opt2 = document.createElement("option"); opt2.value="Hill"; opt2.textContent="Hill Sprints"; select.appendChild(opt2);
       mainBlock.appendChild(select);
-      mainData = select.value==="Hill"?data.mainHill:data.mainVO2;
+      mainSets = data.mainVO2;
+      select.addEventListener("change", (e)=>{
+        mainBlock.innerHTML=""; mainBlock.appendChild(select);
+        if(e.target.value==="VO2") mainSets = data.mainVO2;
+        else mainSets = data.mainHill;
+        renderReps(mainSets);
+      });
     }
+    renderReps(mainSets);
 
-    mainData.forEach(set=>{
-      const reps = set.reps||1;
+    // Mobility
+    mobilityList.innerHTML = "";
+    data.mobility.forEach(item => {
+      const div = document.createElement("div");
+      div.textContent = item;
+      mobilityList.appendChild(div);
+    });
+
+    // Feedback
+    feedbackBlock.innerHTML = `<div class="card"><div class="cardTitle">Feedback</div><div class="muted">Complete all reps at target pace → increase pace next week. Missed reps → maintain pace.</div></div>`;
+
+    topTick.checked = false;
+  }
+
+  function renderReps(sets){
+    sets.forEach((set)=>{
+      const reps = set.reps || 1;
       for(let i=1;i<=reps;i++){
-        const div=document.createElement("div");
+        const div = document.createElement("div");
         div.className="repRow";
-        div.innerHTML=`
-          <span class="repText">${set.text} (Rep ${i}/${reps})</span>
-          <span class="timerSpan" data-duration="${set.duration}">${formatTime(set.duration)}</span>
-          <input type="checkbox" />
-        `;
+        div.innerHTML = `<span class="repText">${set.text} (Rep ${i}/${reps})</span>
+                         <span class="timerSpan" data-duration="${set.duration}">${formatTime(set.duration)}</span>
+                         <input type="checkbox">`;
         mainBlock.appendChild(div);
         if(set.rest){
-          const restDiv=document.createElement("div");
+          const restDiv = document.createElement("div");
           restDiv.className="restRow";
           restDiv.textContent=`Rest ${formatTime(set.rest)}`;
           mainBlock.appendChild(restDiv);
         }
       }
     });
-
-    // Mobility
-    mobilityList.innerHTML="";
-    data.mobility.forEach(item=>{
-      const div=document.createElement("div");
-      div.textContent=item;
-      mobilityList.appendChild(div);
-    });
-
-    // Feedback
-    feedbackBlock.innerHTML=`<div class="card"><div class="cardTitle">Feedback</div><div class="muted">Complete all reps at target pace → increase pace next week. Missed reps → maintain pace.</div></div>`;
   }
 
-  // -----------------------------
-  // Interval Logic
-  // -----------------------------
-  function startIntervalTimers(){
-    clearInterval(intervalTimer);
-    const repRows=Array.from(mainBlock.querySelectorAll(".repRow"));
-    currentRepIndex=0;
-    runNextRep(repRows);
+  function formatTime(sec){
+    const m=Math.floor(sec/60).toString().padStart(2,"0");
+    const s=(sec%60).toString().padStart(2,"0");
+    return `${m}:${s}`;
   }
 
-  function runNextRep(repRows){
-    if(currentRepIndex>=repRows.length) return;
-    const row=repRows[currentRepIndex];
-    const timerSpan=row.querySelector(".timerSpan");
-    const cb=row.querySelector("input[type=checkbox]");
-    let sec=parseInt(timerSpan.getAttribute("data-duration"));
-    row.classList.add("active");
-    beep.play();
-
-    intervalTimer=setInterval(()=>{
-      sec--;
-      timerSpan.textContent=formatTime(sec);
-      if(sec<=0){
-        clearInterval(intervalTimer);
-        beep.play();
-        cb.checked=true;
-        row.classList.remove("active");
-        row.classList.add("completed");
-        currentRepIndex++;
-        runNextRep(repRows);
-      }
-    },1000);
+  // -----------------------
+  // Calendar
+  // -----------------------
+  function renderCalendar(){
+    const today = new Date();
+    calendarGrid.innerHTML="";
+    for(let i=0;i<18;i++){
+      const dayBox = document.createElement("div");
+      dayBox.style.height="40px";
+      dayBox.style.border="1px solid var(--line)";
+      dayBox.style.display="flex";
+      dayBox.style.alignItems="center";
+      dayBox.style.justifyContent="center";
+      dayBox.style.backgroundColor=i===today.getDay()-1?"#6fd3ff":"var(--card2)";
+      dayBox.textContent=i+1;
+      calendarGrid.appendChild(dayBox);
+    }
   }
 
-  // -----------------------------
-  // Init
-  // -----------------------------
+  renderCalendar();
   renderDay("Monday");
-  daySelect.addEventListener("change",e=>renderDay(e.target.value));
+  daySelect.addEventListener("change", e=>renderDay(e.target.value));
+
 });
