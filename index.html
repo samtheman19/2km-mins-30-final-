@@ -4,139 +4,163 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2km Training Plan</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-body {
-  margin:0;
-  font-family: 'Roboto', sans-serif;
-  background:#0f1220;
-  color:white;
-}
-header {
-  text-align:center;
-  padding:20px;
-  font-size:28px;
-  background: linear-gradient(90deg,#ff6a00,#ee0979);
-  font-weight:bold;
-}
-.card {
-  background:#15182a;
-  margin:12px;
-  padding:16px;
-  border-radius:14px;
-}
-h2,h3 {
-  margin:8px 0;
-}
-select, input[type=number] {
-  width:100%;
-  padding:10px;
-  border-radius:8px;
-  background:#101017;
-  color:white;
-  border:none;
-  margin-bottom:10px;
-}
-.repRow {
-  background:#0e1020;
-  margin:8px 0;
-  padding:12px;
-  border-radius:10px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:relative;
-}
-.progressBar {
-  position:absolute;
-  top:0; left:0; height:100%;
-  background: linear-gradient(90deg,#ff6a00,#ee0979);
-  opacity:0.3;
-  width:0%;
-  border-radius:10px;
-}
-input[type=checkbox] {
-  margin-left:10px;
-}
-.timer {
-  font-size:32px;
-  text-align:center;
-  margin:12px 0;
-}
-.calendar {
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:4px;
-  margin:10px 12px;
-}
-.calendarDay {
-  background:#101017;
-  padding:8px;
-  border-radius:6px;
-  text-align:center;
-}
-.calendarDay.completed { background: linear-gradient(90deg,#ff6a00,#ee0979);}
-.weekdays {
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  margin:10px 12px;
-  text-align:center;
-}
-.feedback {
-  display:flex;
-  flex-direction:column;
-  margin:12px 0;
-}
-.feedback label {
-  margin-bottom:4px;
-}
-.feedback input {
-  margin-bottom:4px;
-}
+  :root {
+    --bg-dark: #0f1220;
+    --card-bg: #15182a;
+    --highlight: #28a745;
+    --text-light: #eee;
+    --accent: #1e90ff;
+  }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-light);
+  }
+
+  header {
+    text-align: center;
+    padding: 16px;
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 1px solid #222;
+  }
+
+  .container {
+    max-width: 500px;
+    margin: 16px auto;
+    padding: 0 12px;
+  }
+
+  select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    background: #101017;
+    color: white;
+    border: none;
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+
+  h2, h3 {
+    margin: 6px 0;
+  }
+
+  ul {
+    margin: 8px 0 0 20px;
+    padding: 0;
+  }
+
+  #sessionTimer {
+    text-align: center;
+    font-size: 48px;
+    margin: 12px 0;
+  }
+
+  .timer-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .timer-buttons button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .repRow {
+    background: #101017;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 8px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .progressBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: var(--highlight);
+    width: 0%;
+    opacity: 0.3;
+    border-radius: 8px;
+    transition: width 1s linear;
+  }
+
+  .repRow.completed {
+    opacity: 0.7;
+    text-decoration: line-through;
+  }
+
+  .thursdayDropdown {
+    margin-bottom: 12px;
+    padding: 10px;
+    background: #222;
+    border-radius: 10px;
+    border: 2px solid var(--accent);
+  }
 </style>
 </head>
 
 <body>
+
 <header>2km Training Plan</header>
 
-<div class="card">
+<div class="container">
+
+  <div id="sessionTimer">00:00</div>
+  <div class="timer-buttons">
+    <button id="startSession">Start</button>
+    <button id="pauseSession">Pause</button>
+    <button id="resetSession">Reset</button>
+  </div>
+
   <select id="daySelect"></select>
-  <h2 id="dayTitle"></h2>
-  <p id="dayExplain"></p>
-</div>
 
-<div class="card">
-  <h3>Warm-up</h3>
-  <ul id="warmupList"></ul>
-</div>
+  <div class="card">
+    <h2 id="dayTitle"></h2>
+    <p id="dayExplain"></p>
+  </div>
 
-<div class="card">
-  <h3>Main Session</h3>
-  <div class="timer" id="sessionTime">00:00</div>
-  <div id="mainBlock"></div>
-  <button id="startSession">Start</button>
-  <button id="pauseSession">Pause</button>
-  <button id="resetSession">Reset</button>
-</div>
+  <div class="card">
+    <h3>Warm-up</h3>
+    <ul id="warmupList"></ul>
+  </div>
 
-<div class="card">
-  <h3>Mobility / Cooldown</h3>
-  <div id="mobilityList"></div>
-</div>
+  <div class="card">
+    <h3>Main Session</h3>
+    <div id="mainBlock"></div>
+  </div>
 
-<div class="card feedback">
-  <label>Pre-Workout Fatigue (1-5)</label>
-  <input type="number" id="preFatigue" min="1" max="5">
-  <label>Post-Workout Fatigue (1-5)</label>
-  <input type="number" id="postFatigue" min="1" max="5">
-</div>
+  <div class="card">
+    <h3>Mobility / Cool Down</h3>
+    <ul id="mobilityList"></ul>
+  </div>
 
-<div class="weekdays">
-  <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
 </div>
-<div class="calendar" id="calendar"></div>
 
 <script src="app.js"></script>
+
 </body>
 </html>
