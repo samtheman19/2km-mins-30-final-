@@ -1,10 +1,9 @@
-if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(r => r.forEach(reg => reg.unregister())); }
+if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>r.forEach(reg=>reg.unregister()));}
 document.addEventListener("DOMContentLoaded",()=>{
 
 const beep=new Audio("https://www.soundjay.com/buttons/beep-07.wav");
-
-const goalTimeSec=8*60;
-const goalDistance=2;
+const goalTimeSec=8*60; 
+const goalDistance=2; 
 const goalKph=(goalDistance/(goalTimeSec/3600)).toFixed(1);
 
 const daySelect=document.getElementById("daySelect");
@@ -45,10 +44,7 @@ function renderDay(day){
 const data=plan[day];
 dayTitle.textContent=day;
 dayExplain.textContent=data.explain;
-
-warmupList.innerHTML="";
-data.warmup.forEach(item=>{const li=document.createElement("li");li.textContent=item;warmupList.appendChild(li);});
-
+warmupList.innerHTML="";data.warmup.forEach(item=>{const li=document.createElement("li");li.textContent=item;warmupList.appendChild(li);});
 mainBlock.innerHTML="";
 if(day==="Thursday"){const container=document.createElement("div");container.className="thursdayDropdown";container.style.background="#222";container.style.padding="10px";container.style.borderRadius="12px";container.style.marginBottom="10px";container.style.border="2px solid var(--accent)";const label=document.createElement("div");label.textContent="Select Thursday Workout:";label.style.color="var(--accent)";label.style.fontWeight="bold";label.style.marginBottom="6px";container.appendChild(label);const dropdown=document.createElement("select");dropdown.innerHTML=`<option value="VO2">VO₂ Max</option><option value="Hill">Hill Sprint</option>`;dropdown.style.padding="6px 10px";dropdown.style.borderRadius="8px";dropdown.style.background="#101017";dropdown.style.color="#fff";dropdown.addEventListener("change",e=>{renderMainBlocks(day,e.target.value);});container.appendChild(dropdown);mainBlock.appendChild(container);renderMainBlocks(day,"VO2");}else{renderMainBlocks(day);}
 
@@ -77,56 +73,11 @@ if(set.rest){const restDiv=document.createElement("div");restDiv.className="rest
 }
 
 function startIntervalTimers(){clearInterval(intervalTimer);const repRows=Array.from(mainBlock.querySelectorAll(".repRow"));currentRepIndex=0;runNextRep(repRows);}
+function runNextRep(repRows){if(currentRepIndex>=repRows.length){updateDayCompletion(new Date().getDate());return;}const row=repRows[currentRepIndex];const timerSpan=row.querySelector(".timerSpan");const cb=row.querySelector("input[type=checkbox]");let sec=parseInt(timerSpan.getAttribute("data-duration"));const progressBar=row.querySelector("div.progressBar");row.classList.add("active");beep.play();intervalTimer=setInterval(()=>{sec--;timerSpan.textContent=formatTime(sec);progressBar.style.width=`${((parseInt(timerSpan.getAttribute("data-duration"))-sec)/parseInt(timerSpan.getAttribute("data-duration")))*100}%`;if(sec<=0){clearInterval(intervalTimer);beep.play();cb.checked=true;row.classList.remove("active");row.classList.add("completed");progressBar.style.width="100%";currentRepIndex++;runNextRep(repRows);}},1000);}
 
-function runNextRep(repRows){
-if(currentRepIndex>=repRows.length){updateDayCompletion(new Date().getDate());return;}
-const row=repRows[currentRepIndex];
-const timerSpan=row.querySelector(".timerSpan");
-const cb=row.querySelector("input[type=checkbox]");
-let sec=parseInt(timerSpan.getAttribute("data-duration"));
-const progressBar=row.querySelector("div.progressBar");
-row.classList.add("active");
-beep.play();
+function renderCalendar(){calendarDiv.innerHTML="";const today=new Date();const year=today.getFullYear();const month=today.getMonth();const daysInMonth=new Date(year,month+1,0).getDate();const monthKey=`${year}-${month+1}`;let completionData=JSON.parse(localStorage.getItem(monthKey))||{};for(let i=1;i<=daysInMonth;i++){const div=document.createElement("div");div.className="calendarDay";div.textContent=i;if(completionData[i] && completionData[i].completed){div.classList.add("completed");div.title=`Workout done. Pre: ${completionData[i].pre}, Post: ${completionData[i].post}`;}if(i===today.getDate()) div.classList.add("active");calendarDiv.appendChild(div);}}
 
-intervalTimer=setInterval(()=>{
-sec--;
-timerSpan.textContent=formatTime(sec);
-progressBar.style.width=`${((parseInt(timerSpan.getAttribute("data-duration"))-sec)/parseInt(timerSpan.getAttribute("data-duration")))*100}%`;
-if(sec<=0){clearInterval(intervalTimer);beep.play();cb.checked=true;row.classList.remove("active");row.classList.add("completed");progressBar.style.width="100%";currentRepIndex++;runNextRep(repRows);}
-},1000);
-}
+function updateDayCompletion(dayNumber){const today=new Date();const year=today.getFullYear();const month=today.getMonth();const monthKey=`${year}-${month+1}`;let completionData=JSON.parse(localStorage.getItem(monthKey))||{};const pre=preFatigue.value||"";const post=postFatigue.value||"";completionData[dayNumber]={completed:true,pre,post};localStorage.setItem(monthKey,JSON.stringify(completionData));renderCalendar();}
 
-function renderCalendar(){
-calendarDiv.innerHTML="";
-const today=new Date();
-const year=today.getFullYear();
-const month=today.getMonth();
-const daysInMonth=new Date(year,month+1,0).getDate();
-const monthKey=`${year}-${month+1}`;
-let completionData=JSON.parse(localStorage.getItem(monthKey))||{};
-for(let i=1;i<=daysInMonth;i++){
-const div=document.createElement("div");
-div.className="calendarDay";
-div.textContent=i;
-if(completionData[i] && completionData[i].completed){div.classList.add("completed");div.title=`Workout done. Pre: ${completionData[i].pre}, Post: ${completionData[i].post}`;}
-if(i===today.getDate()) div.classList.add("active");
-calendarDiv.appendChild(div);
-}
-}
-
-function updateDayCompletion(dayNumber){
-const today=new Date();
-const year=today.getFullYear();
-const month=today.getMonth();
-const monthKey=`${year}-${month+1}`;
-let completionData=JSON.parse(localStorage.getItem(monthKey))||{};
-const pre=preFatigue.value||"";
-const post=postFatigue.value||"";
-completionData[dayNumber]={completed:true,pre,post};
-localStorage.setItem(monthKey,JSON.stringify(completionData));
-renderCalendar();
-}
-
-// Init
 renderDay("Monday");
 daySelect.addEventListener("change",e=>renderDay(e.target.value));
