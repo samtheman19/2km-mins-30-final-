@@ -5,84 +5,20 @@ if ('serviceWorker' in navigator) {
 document.addEventListener("DOMContentLoaded", () => {
 
   // -----------------------
-  // User Goal & pacing
+  // CONFIG
   // -----------------------
-  const last2km = 8 * 60 + 36; // 8:36 in seconds
-  const target2km = 8 * 60; // 8:00 goal
-  const goalPacePer100m = target2km / 20; // seconds per 100m
-
-  // -----------------------
-  // Audio beep
-  // -----------------------
+  const goalPaceSecPerKm = 240; // 8:00 per 2 km → 4:00/km
   const beep = new Audio("https://www.soundjay.com/buttons/beep-07.wav");
 
   // -----------------------
-  // DOM Elements
-  // -----------------------
-  const daySelect = document.getElementById("daySelect");
-  const dayTitle = document.getElementById("dayTitle");
-  const warmupList = document.getElementById("warmupList");
-  const mainBlock = document.getElementById("mainBlock");
-  const mobilityList = document.getElementById("mobilityList");
-  const feedbackBlock = document.getElementById("feedbackBlock");
-  const sessionTime = document.getElementById("sessionTime");
-  const startSession = document.getElementById("startSession");
-  const pauseSession = document.getElementById("pauseSession");
-  const resetSession = document.getElementById("resetSession");
-
-  // -----------------------
-  // Session Timer
-  // -----------------------
-  let sessionSeconds = 0;
-  let sessionInterval;
-
-  function formatHMS(sec) {
-    const h = Math.floor(sec / 3600).toString().padStart(2, "0");
-    const m = Math.floor((sec % 3600) / 60).toString().padStart(2, "0");
-    const s = (sec % 60).toString().padStart(2, "0");
-    return `${h}:${m}:${s}`;
-  }
-
-  function formatTime(sec) {
-    const m = Math.floor(sec / 60).toString().padStart(2, "0");
-    const s = (sec % 60).toString().padStart(2, "0");
-    return `${m}:${s}`;
-  }
-
-  startSession.addEventListener("click", () => {
-    clearInterval(sessionInterval);
-    sessionInterval = setInterval(() => {
-      sessionSeconds++;
-      sessionTime.textContent = formatHMS(sessionSeconds);
-    }, 1000);
-    startIntervalTimers();
-    beep.play();
-  });
-
-  pauseSession.addEventListener("click", () => clearInterval(sessionInterval));
-
-  resetSession.addEventListener("click", () => {
-    clearInterval(sessionInterval);
-    sessionSeconds = 0;
-    sessionTime.textContent = formatHMS(sessionSeconds);
-    document.querySelectorAll(".repRow input[type=checkbox]").forEach(cb => cb.checked = false);
-    document.querySelectorAll(".timerSpan").forEach(span => {
-      const dur = parseInt(span.getAttribute("data-duration")) || 0;
-      span.textContent = formatTime(dur);
-      span.closest(".repRow").classList.remove("active", "completed");
-    });
-    localStorage.removeItem("planProgress");
-  });
-
-  // -----------------------
-  // 6-Day Plan with optional Thursday dropdown
+  // 6-Day Training Plan
   // -----------------------
   const plan = {
     Monday: {
       title: "Intervals",
       explain: "Short, fast repetitions at 2 km pace to develop speed and running economy.",
       warmup: ["10 min easy jog", "Dynamic mobility (hips, calves, ankles)"],
-      main: [{ text: "400 m @ goal pace", reps: 6, duration: Math.round(400 / 100 * goalPacePer100m), rest: 20 }],
+      main: [{ text: "400 m @ goal pace", reps: 6, duration: Math.round(400/1000*goalPaceSecPerKm), rest: 20 }],
       mobility: ["Hip flexor stretch – 60 sec", "Calf stretch – 60 sec"]
     },
     Tuesday: {
@@ -102,14 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
       main: [{ text: "Easy run or cross-training", duration: 1200 }],
       mobility: ["Full body mobility flow – 10 min"]
     },
-    Thursday: { // Dropdown selectable
-      title: "VO₂ Max / Hill Sprints",
-      explain: "Choose VO₂ Max intervals or Hill sprints to increase aerobic capacity or leg power.",
+    Thursday: {
+      title: "VO₂ Max Intervals",
+      explain: "Longer intervals slightly faster than race pace to increase aerobic capacity.",
       warmup: ["10 min easy jog", "Running drills"],
-      options: {
-        vo2: [{ text: "500 m slightly faster than goal pace", reps: 5, duration: Math.round(500 / 100 * goalPacePer100m), rest: 120 }],
-        hill: [{ text: "Hill sprint 60 m (1:6 gradient)", reps: 6, duration: 20, rest: 90 }]
-      },
+      mainVO2: [{ text: "500 m slightly faster than goal pace", reps: 5, duration: Math.round(500/1000*(goalPaceSecPerKm*0.95)), rest: 120 }],
+      mainHill: [{ text: "60 m hill sprint (1:6 gradient)", reps: 6, duration: 20, rest: 90 }],
       mobility: ["Quad stretch – 60 sec"]
     },
     Friday: {
@@ -137,140 +71,236 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // -----------------------
-  // Populate day selector
+  // DOM Elements
   // -----------------------
-  Object.keys(plan).forEach(day => {
-    const opt = document.createElement("option");
-    opt.value = day;
-    opt.textContent = day;
+  const daySelect = document.getElementById("daySelect");
+  const dayTitle = document.getElementById("dayTitle");
+  const warmupList = document.getElementById("warmupList");
+  const mainBlock = document.getElementById("mainBlock");
+  const mobilityList = document.getElementById("mobilityList");
+  const feedbackBlock = document.getElementById("feedbackBlock");
+
+  const sessionTime = document.getElementById("sessionTime");
+  const startSession = document.getElementById("startSession");
+  const pauseSession = document.getElementById("pauseSession");
+  const resetSession = document.getElementById("resetSession");
+
+  const topTick = document.createElement("input");
+  topTick.type = "checkbox";
+  topTick.style.width = "22px";
+  topTick.style.height = "22px";
+  topTick.style.marginRight = "8px";
+  topTick.style.cursor = "pointer";
+  const tickLabel = document.createElement("span");
+  tickLabel.textContent = "Day Started";
+  const tickContainer = document.createElement("div");
+  tickContainer.className = "row";
+  tickContainer.appendChild(topTick);
+  tickContainer.appendChild(tickLabel);
+  document.getElementById("dayCard").insertBefore(tickContainer, warmupList.parentElement);
+
+  // -----------------------
+  // Calendar
+  // -----------------------
+  const calendarBlock = document.createElement("div");
+  calendarBlock.className = "card";
+  calendarBlock.innerHTML = `<div class="cardTitle">3-Week Calendar</div>`;
+  const calendarGrid = document.createElement("div");
+  calendarGrid.style.display = "grid";
+  calendarGrid.style.gridTemplateColumns = "repeat(7,1fr)";
+  calendarGrid.style.gap = "4px";
+  calendarBlock.appendChild(calendarGrid);
+  document.querySelector(".app").appendChild(calendarBlock);
+
+  // Build initial calendar
+  const startDate = new Date(); // today
+  startDate.setDate(startDate.getDate() - startDate.getDay()); // move to Sunday of current week
+  const days = [];
+  for (let w = 0; w < 3; w++) {
+    for (let d = 1; d <= 6; d++) {
+      const day = new Date(startDate);
+      day.setDate(startDate.getDate() + d + w*7);
+      days.push({ date: day, completed: false, name: Object.keys(plan)[d-1] });
+      const div = document.createElement("div");
+      div.textContent = `${day.toLocaleDateString('en-GB',{weekday:'short'})}`;
+      div.style.padding = "4px";
+      div.style.borderRadius = "6px";
+      div.style.textAlign = "center";
+      div.style.background = "rgba(255,255,255,0.05)";
+      div.setAttribute("data-index", days.length-1);
+      calendarGrid.appendChild(div);
+    }
+  }
+
+  // -----------------------
+  // Timers
+  // -----------------------
+  let sessionSeconds = 0;
+  let sessionInterval;
+  let currentRepIndex = 0;
+  let intervalTimer;
+
+  function formatHMS(sec) {
+    const h = Math.floor(sec / 3600).toString().padStart(2,"0");
+    const m = Math.floor((sec % 3600)/60).toString().padStart(2,"0");
+    const s = (sec % 60).toString().padStart(2,"0");
+    return `${h}:${m}:${s}`;
+  }
+  function formatTime(sec){
+    const m = Math.floor(sec/60).toString().padStart(2,"0");
+    const s = (sec%60).toString().padStart(2,"0");
+    return `${m}:${s}`;
+  }
+
+  startSession.addEventListener("click", () => {
+    if(!topTick.checked) topTick.checked=true; // mark started
+    topTick.style.background = "#6fd3ff"; // blue when active
+    clearInterval(sessionInterval);
+    sessionInterval = setInterval(()=>{
+      sessionSeconds++;
+      sessionTime.textContent = formatHMS(sessionSeconds);
+    },1000);
+    beep.play();
+    startIntervalTimers();
+  });
+  pauseSession.addEventListener("click", ()=>clearInterval(sessionInterval));
+  resetSession.addEventListener("click", ()=>{
+    clearInterval(sessionInterval);
+    clearInterval(intervalTimer);
+    sessionSeconds=0;
+    sessionTime.textContent=formatHMS(sessionSeconds);
+    document.querySelectorAll(".repRow input[type=checkbox]").forEach(cb=>cb.checked=false);
+    document.querySelectorAll(".repRow").forEach(r=>{r.classList.remove("completed","active");});
+    document.querySelectorAll(".timerSpan").forEach(span=>{
+      span.textContent=formatTime(parseInt(span.getAttribute("data-duration")));
+    });
+    topTick.checked=false;
+    topTick.style.background=""; 
+  });
+
+  // -----------------------
+  // Populate Day Selector
+  // -----------------------
+  Object.keys(plan).forEach(day=>{
+    const opt=document.createElement("option");
+    opt.value=day;
+    opt.textContent=day;
     daySelect.appendChild(opt);
   });
 
   // -----------------------
-  // Rendering & progress logic
+  // Render Day
   // -----------------------
-  let currentRepIndex = 0;
-  let intervalTimer;
-
-  function renderDay(day) {
+  function renderDay(day){
     const data = plan[day];
     dayTitle.textContent = day;
 
-    // Clear previous content
-    warmupList.innerHTML = "";
-    mainBlock.innerHTML = "";
-    mobilityList.innerHTML = "";
-    feedbackBlock.innerHTML = "";
+    // explanation
+    const explainCard = document.createElement("div");
+    explainCard.className="card";
+    explainCard.innerHTML=`<div class="cardTitle">${data.title}</div><div class="muted">${data.explain}</div>`;
+    const existingExplain = dayCard.querySelector(".card.explainCard");
+    if(existingExplain) existingExplain.remove();
+    explainCard.classList.add("explainCard");
+    dayCard.insertBefore(explainCard,warmupList.parentElement);
 
-    // Warmup
-    data.warmup.forEach(w => {
-      const li = document.createElement("li");
-      li.textContent = w;
+    // Warm-up
+    warmupList.innerHTML="";
+    data.warmup.forEach(item=>{
+      const li=document.createElement("li");
+      li.textContent=item;
       warmupList.appendChild(li);
     });
 
-    // Main sets (handle Thursday options)
+    // Thursday dropdown
     let mainSets = data.main || [];
-    if (day === "Thursday") {
-      // Create dropdown
+    if(day==="Thursday"){
       const select = document.createElement("select");
-      select.innerHTML = `
-        <option value="vo2">VO₂ Max Intervals</option>
-        <option value="hill">Hill Sprints</option>
-      `;
-      select.addEventListener("change", e => {
-        data.main = data.options[e.target.value];
-        renderDay("Thursday"); // Re-render with new option
+      const opt1 = document.createElement("option");
+      opt1.value="VO2"; opt1.textContent="VO₂ Max Intervals";
+      const opt2 = document.createElement("option");
+      opt2.value="Hill"; opt2.textContent="Hill Sprints";
+      select.appendChild(opt1); select.appendChild(opt2);
+      explainCard.appendChild(select);
+      mainSets = data.mainVO2;
+      select.addEventListener("change", e=>{
+        mainSets = e.target.value==="VO2"?data.mainVO2:data.mainHill;
+        renderMain(mainSets);
       });
-      mainBlock.appendChild(select);
-      mainSets = data.options.vo2; // default
     }
 
-    mainSets.forEach(set => {
-      const reps = set.reps || 1;
-      for (let i = 1; i <= reps; i++) {
-        const div = document.createElement("div");
-        div.className = "repRow";
-        div.innerHTML = `
+    renderMain(mainSets);
+
+    // Mobility
+    mobilityList.innerHTML="";
+    data.mobility.forEach(item=>{
+      const div=document.createElement("div");
+      div.textContent=item;
+      mobilityList.appendChild(div);
+    });
+
+    // Feedback
+    feedbackBlock.innerHTML=`<div class="card"><div class="cardTitle">Feedback</div><div class="muted">Complete all reps at target pace → increase pace next week. Missed reps → maintain pace.</div></div>`;
+  }
+
+  function renderMain(mainSets){
+    mainBlock.innerHTML="";
+    mainSets.forEach(set=>{
+      const reps=set.reps||1;
+      for(let i=1;i<=reps;i++){
+        const div=document.createElement("div");
+        div.className="repRow";
+        div.innerHTML=`
           <span class="repText">${set.text} (Rep ${i}/${reps})</span>
           <span class="timerSpan" data-duration="${set.duration}">${formatTime(set.duration)}</span>
           <input type="checkbox" />
         `;
         mainBlock.appendChild(div);
-
-        if (set.rest) {
-          const restDiv = document.createElement("div");
-          restDiv.className = "restRow";
-          restDiv.textContent = `Rest ${formatTime(set.rest)}`;
+        if(set.rest){
+          const restDiv=document.createElement("div");
+          restDiv.className="restRow";
+          restDiv.textContent=`Rest ${formatTime(set.rest)}`;
           mainBlock.appendChild(restDiv);
         }
       }
     });
-
-    // Mobility
-    data.mobility.forEach(m => {
-      const div = document.createElement("div");
-      div.textContent = m;
-      mobilityList.appendChild(div);
-    });
-
-    // Feedback
-    feedbackBlock.innerHTML = `<div class="card"><div class="cardTitle">Feedback</div><div class="muted">Complete all reps at target pace → increase pace next week. Missed reps → maintain pace.</div></div>`;
-
-    // Load progress from localStorage
-    const saved = JSON.parse(localStorage.getItem(day) || "{}");
-    mainBlock.querySelectorAll(".repRow input[type=checkbox]").forEach((cb, idx) => {
-      if (saved[idx]) {
-        cb.checked = true;
-        cb.closest(".repRow").classList.add("completed");
-      }
-    });
   }
 
-  function startIntervalTimers() {
+  function startIntervalTimers(){
     clearInterval(intervalTimer);
     const repRows = Array.from(mainBlock.querySelectorAll(".repRow"));
-    currentRepIndex = repRows.findIndex(row => !row.querySelector("input[type=checkbox]").checked);
+    currentRepIndex=0;
     runNextRep(repRows);
   }
 
-  function runNextRep(repRows) {
-    if (currentRepIndex >= repRows.length) return;
+  function runNextRep(repRows){
+    if(currentRepIndex>=repRows.length) return;
+    repRows.forEach(r=>r.classList.remove("active"));
     const row = repRows[currentRepIndex];
+    row.classList.add("active");
     const timerSpan = row.querySelector(".timerSpan");
     const cb = row.querySelector("input[type=checkbox]");
-    let sec = parseInt(timerSpan.getAttribute("data-duration"));
-
-    // Highlight active
-    repRows.forEach(r => r.classList.remove("active"));
-    row.classList.add("active");
-
+    let sec=parseInt(timerSpan.getAttribute("data-duration"));
     beep.play();
 
-    intervalTimer = setInterval(() => {
+    intervalTimer = setInterval(()=>{
       sec--;
-      timerSpan.textContent = formatTime(sec);
-      if (sec <= 0) {
+      timerSpan.textContent=formatTime(sec);
+      if(sec<=0){
         clearInterval(intervalTimer);
-        cb.checked = true;
+        beep.play();
+        cb.checked=true;
         row.classList.remove("active");
         row.classList.add("completed");
-        beep.play();
-
-        // Save progress
-        const progress = Array.from(repRows).map(r => r.querySelector("input[type=checkbox]").checked);
-        localStorage.setItem(daySelect.value, JSON.stringify(progress));
-
         currentRepIndex++;
         runNextRep(repRows);
       }
-    }, 1000);
+    },1000);
   }
 
   // -----------------------
   // Init
   // -----------------------
   renderDay("Monday");
-  daySelect.addEventListener("change", e => renderDay(e.target.value));
-
+  daySelect.addEventListener("change", e=>renderDay(e.target.value));
 });
