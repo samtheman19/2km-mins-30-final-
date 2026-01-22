@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0b0f" />
-  <title>2km mins 30 Final</title>
+  <title>2km Minus 30 Final</title>
 
   <style>
     :root{
@@ -16,6 +16,8 @@
       --accent:#6fd3ff;
       --line:rgba(255,255,255,.08);
       --pill:rgba(255,255,255,.06);
+      --green:#4caf50;
+      --active:#ff9800;
     }
     *{box-sizing:border-box;}
     html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;}
@@ -24,51 +26,53 @@
     .sub{color:var(--muted);font-size:13px;}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
     .chip{background:var(--pill);padding:10px 12px;border-radius:14px;display:flex;align-items:center;gap:6px;}
-    select,input[type=checkbox]{margin-left:6px;}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0;}
-    .cardTitle{font-size:18px;font-weight:800;margin-bottom:6px;}
-    .dayTitle{font-size:22px;font-weight:900;margin-bottom:10px;}
+    select{background:#101017;color:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;}
+    .card{background:#15151c;border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0;}
+    .cardTitle{font-size:18px;font-weight:800;}
+    .dayTitle{font-size:22px;font-weight:900;margin-bottom:6px;}
     .muted{color:var(--muted);}
-    .repRow{display:flex;justify-content:space-between;align-items:center;margin:6px 0;padding:4px 6px;border-radius:12px;}
-    .repRow.completed{background-color:green;color:#000;}
-    .repRow.active{background-color:#6fd3ff;color:#000;}
-    .restRow{font-style:italic;color:var(--muted);margin:2px 0 8px 0;}
-    #calendarGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:16px;}
-    #calendarGrid div{height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;}
-    #sessionTimer{font-size:32px;font-weight:800;margin:12px 0;text-align:center;}
-    .btn{padding:8px 12px;border-radius:12px;border:none;background:var(--accent);color:#081018;font-weight:700;cursor:pointer;margin-right:6px;}
+    .repRow{display:flex;justify-content:space-between;align-items:center;margin:6px 0;padding:4px 8px;border-radius:10px;background:rgba(255,255,255,.02);}
+    .repRow.completed{background:var(--green);}
+    .repRow.active{background:var(--active);}
+    .timerSpan{font-variant-numeric:tabular-nums;font-weight:900;}
+    .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:20px;}
+    .calendarDay{height:20px;border-radius:4px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:10px;}
+    .calendarDay.completed{background:var(--green);}
   </style>
 </head>
 
 <body>
   <div class="app">
-    <h1>2km mins 30 Final</h1>
+    <h1>2km Minus 30 Final</h1>
     <div class="sub">Scientifically-based · 3-week block · −30s goal</div>
 
-    <!-- Top Controls -->
     <div class="row">
       <div class="chip">
         <strong>Day</strong>
         <select id="daySelect"></select>
       </div>
       <div class="chip">
-        <strong>Started</strong>
-        <input type="checkbox" id="topTick"/>
+        <strong>Thursday Mode</strong>
+        <select id="thursdayMode">
+          <option value="vo2">VO₂ Max Intervals</option>
+          <option value="hill">Hill Sprints</option>
+        </select>
       </div>
     </div>
 
-    <!-- Session Timer -->
-    <div id="sessionTimer">00:00:00</div>
-    <div class="row">
-      <button class="btn" id="startSession">Start</button>
-      <button class="btn" id="pauseSession">Pause</button>
-      <button class="btn" id="resetSession">Reset</button>
+    <div class="card">
+      <div class="row">
+        <strong>Session Timer:</strong>
+        <span id="sessionTime">00:00:00</span>
+        <button id="startSession">Start</button>
+        <button id="pauseSession">Pause</button>
+        <button id="resetSession">Reset</button>
+      </div>
     </div>
 
-    <!-- Day Card -->
     <div class="card" id="dayCard">
       <div class="dayTitle" id="dayTitle">—</div>
-      <div id="dayExplain" class="muted"></div>
+      <div id="dayExplain"></div>
 
       <details open>
         <summary>Warm-up</summary>
@@ -83,13 +87,11 @@
       </details>
     </div>
 
-    <!-- Feedback -->
     <div id="feedbackBlock"></div>
 
-    <!-- Calendar -->
-    <div id="calendarGrid"></div>
+    <div class="calendar" id="calendar"></div>
   </div>
 
-  <script src="app.js?v=999"></script>
+  <script src="app.js?v=1000"></script>
 </body>
 </html>
