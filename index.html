@@ -1,59 +1,77 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0b0f" />
-  <title>2km −30s Speed Plan</title>
-  <style>
-    :root{
-      --bg:#0b0b0f;
-      --card:#15151c;
-      --card2:#101017;
-      --muted:#9aa0a6;
-      --text:#ffffff;
-      --accent:#6fd3ff;
-      --line:rgba(255,255,255,.08);
-      --pill:rgba(255,255,255,.06);
-      --green:#4caf50;
-      --yellow:#ffca28;
-      --gray:#555;
-    }
-    *{box-sizing:border-box;}
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;}
-    .app{max-width:460px;margin:0 auto;padding:18px 14px 34px;}
-    h1{margin:4px 0 14px;font-size:28px;}
-    .sub{color:var(--muted);font-size:13px;margin-bottom:12px;}
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
-    .chip{background:var(--pill);padding:10px 12px;border-radius:14px;}
-    select{background:var(--card2);color:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0;}
-    .cardTitle{font-size:18px;font-weight:800;}
-    .dayTitle{font-size:22px;font-weight:900;margin-bottom:6px;}
-    .muted{color:var(--muted);}
-    .repRow{display:flex;justify-content:space-between;align-items:center;margin:6px 0;}
-    .repText{flex:1;}
-    .timerSpan{width:60px;text-align:center;font-variant-numeric:tabular-nums;}
-    .repRow.completed{color:var(--green);}
-    .restRow{color:var(--muted);margin-left:10px;margin-bottom:4px;font-size:12px;}
-    #calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:20px;}
-    .dayBox{background:var(--gray);color:#fff;text-align:center;padding:8px;border-radius:6px;font-size:12px;cursor:pointer;}
-    .dayBox.inProgress{background:var(--yellow);}
-    .dayBox.completed{background:var(--green);}
-    .fatigueRow{display:flex;gap:6px;margin-top:6px;}
-    .fatigueInput{width:50px;padding:4px;border-radius:6px;border:1px solid var(--line);background:var(--card2);color:#fff;}
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0b0f" />
+<title>2km −30s Speed Plan</title>
+
+<style>
+:root{
+  --bg:#0b0b0f;
+  --card:#15151c;
+  --card2:#101017;
+  --muted:#9aa0a6;
+  --text:#ffffff;
+  --accent:#6fd3ff;
+  --line:rgba(255,255,255,.08);
+  --pill:rgba(255,255,255,.06);
+  --green:#4caf50;
+  --yellow:#ffca28;
+  --orange:#ff9800;
+  --gray:#555;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;}
+.app{max-width:460px;margin:0 auto;padding:18px 14px 34px;}
+h1{margin:4px 0 14px;font-size:28px;}
+.sub{color:var(--muted);font-size:13px;margin-bottom:12px;}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.chip{background:var(--pill);padding:10px 12px;border-radius:14px;}
+select{background:var(--card2);color:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0;}
+.cardTitle{font-size:18px;font-weight:800;}
+.dayTitle{font-size:22px;font-weight:900;margin-bottom:6px;}
+.muted{color:var(--muted);}
+.repRow{display:flex;justify-content:space-between;align-items:center;margin:6px 0;padding:4px;border-radius:6px;}
+.repRow.active{background:var(--yellow);}
+.repRow.completed{background:var(--green);color:#000;}
+.repText{flex:1;}
+.timerSpan{width:60px;text-align:center;font-variant-numeric:tabular-nums;}
+.restRow{color:var(--muted);margin-left:10px;margin-bottom:4px;font-size:12px;}
+#calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:16px;}
+.calendarDay{padding:6px;text-align:center;border-radius:6px;background:var(--gray);}
+.calendarDay.completed{background:var(--green);}
+.calendarDay.active{background:var(--yellow);}
+.feedbackBox{display:flex;flex-direction:column;margin-top:12px;}
+.feedbackBox input[type=number]{width:50px;margin-bottom:6px;}
+</style>
 </head>
 
 <body>
 <div class="app">
   <h1>2km −30s Speed Plan</h1>
-  <div class="sub">3-week block · Scientifically-based · Target: 8:00 min 2km</div>
+  <div class="sub">Scientifically-based · 3-week block</div>
 
+  <!-- Day selector -->
   <div class="row">
-    <div class="chip"><strong>Day</strong> <select id="daySelect"></select></div>
+    <div class="chip"><strong>Day</strong>
+      <select id="daySelect"></select>
+    </div>
   </div>
 
+  <!-- Session Timer -->
+  <div class="card">
+    <div class="cardTitle">Session Timer</div>
+    <div id="sessionTime">00:00:00</div>
+    <div class="row">
+      <button id="startSession" class="chip">Start</button>
+      <button id="pauseSession" class="chip">Pause</button>
+      <button id="resetSession" class="chip">Reset</button>
+    </div>
+  </div>
+
+  <!-- Day info -->
   <div class="card" id="dayCard">
     <div class="dayTitle" id="dayTitle">—</div>
     <div id="dayExplain"></div>
@@ -69,28 +87,19 @@
       <summary>Mobility</summary>
       <div id="mobilityList"></div>
     </details>
-
-    <div class="card">
-      <div class="cardTitle">Session Timer</div>
-      <div class="row">
-        <button id="startSession">Start</button>
-        <button id="pauseSession">Pause</button>
-        <button id="resetSession">Reset</button>
-        <span id="sessionTime">00:00:00</span>
-      </div>
-    </div>
-
-    <div class="card" id="feedbackBlock">
-      <div class="cardTitle">Feedback</div>
-      <div class="row fatigueRow">
-        <label>Pre fatigue</label><input type="number" id="preFatigue" class="fatigueInput" min="1" max="10">
-        <label>Post fatigue</label><input type="number" id="postFatigue" class="fatigueInput" min="1" max="10">
-      </div>
-    </div>
   </div>
 
+  <!-- Feedback -->
+  <div class="card feedbackBox">
+    <div class="cardTitle">Feedback</div>
+    <label>Fatigue Pre-Workout (1-5): <input type="number" id="preFatigue" min="1" max="5"></label>
+    <label>Fatigue Post-Workout (1-5): <input type="number" id="postFatigue" min="1" max="5"></label>
+    <div class="muted">Complete reps → rate your fatigue and write notes if desired.</div>
+  </div>
+
+  <!-- Calendar -->
   <div class="card">
-    <div class="cardTitle">Calendar</div>
+    <div class="cardTitle">Week Calendar</div>
     <div id="calendar"></div>
   </div>
 </div>
