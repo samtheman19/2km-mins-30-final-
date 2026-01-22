@@ -9,50 +9,37 @@ document.addEventListener("DOMContentLoaded", () => {
       title: "Intervals",
       explain: `6 × 400m @ ${goalKph} kph (full effort)`,
       warmup: ["10 min easy jog", "Dynamic mobility"],
-      main: [
-        { text: `400m @ ${goalKph} kph`, reps: 6, time: "1:36" }
-      ]
+      main: ["400m fast", "400m fast", "400m fast", "400m fast", "400m fast", "400m fast"]
     },
     Tuesday: {
-      title: "Tempo Run",
+      title: "Tempo",
       explain: `25 min @ ${(goalKph * 0.85).toFixed(1)} kph`,
       warmup: ["10 min easy jog"],
-      main: [
-        { text: `Tempo run`, reps: 1, time: "25:00" }
-      ]
+      main: ["25 min tempo run"]
     },
     Wednesday: {
       title: "Recovery",
       explain: "Easy aerobic run",
       warmup: ["5 min walk"],
-      main: [
-        { text: "Easy run @ 9–10 kph", reps: 1, time: "20:00" }
-      ]
+      main: ["20 min easy run"]
     },
     Thursday: {
       title: "VO₂ Max",
       explain: `5 × 500m @ ${(goalKph * 1.1).toFixed(1)} kph`,
       warmup: ["10 min jog"],
-      main: [
-        { text: `500m fast`, reps: 5, time: "1:55" }
-      ]
+      main: ["500m fast", "500m fast", "500m fast", "500m fast", "500m fast"]
     },
     Friday: {
-      title: "Endurance + Strides",
-      explain: "35 min easy + strides",
+      title: "Endurance",
+      explain: "Steady aerobic run",
       warmup: ["10 min jog"],
-      main: [
-        { text: "Easy run", reps: 1, time: "35:00" }
-      ]
+      main: ["35 min easy run"]
     },
     Saturday: {
       title: "Race Simulation",
       explain: `Broken 2km @ ${goalKph} kph`,
       warmup: ["10 min jog"],
-      main: [
-        { text: "1km steady", reps: 1, time: "4:00" },
-        { text: "500m fast", reps: 1, time: "2:00" }
-      ]
+      main: ["1km steady", "500m fast", "500m fast"]
     }
   };
 
@@ -61,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const dayExplain = document.getElementById("dayExplain");
   const warmupList = document.getElementById("warmupList");
   const mainBlock = document.getElementById("mainBlock");
-  const sessionTime = document.getElementById("sessionTime");
 
   Object.keys(plan).forEach(day => {
     const opt = document.createElement("option");
@@ -86,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     d.main.forEach(m => {
       const div = document.createElement("div");
       div.className = "rep";
-      div.textContent = `${m.reps} × ${m.text} (${m.time})`;
+      div.textContent = m;
       mainBlock.appendChild(div);
     });
   }
