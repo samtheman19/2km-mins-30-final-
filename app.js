@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const last2km = 8*60+36; // 8:36 last 2km
   const target2km = 8*60; // 8:00 goal
   const pacePer100m = target2km / 20; // 2 km = 20 × 100 m
+  function formatMMSS(sec){ const m=Math.floor(sec/60).toString().padStart(2,"0"); const s=(sec%60).toString().padStart(2,"0"); return `${m}:${s}`; }
 
   // -----------------------
   // Plan data
@@ -120,7 +121,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function formatHMS(sec){ const h=Math.floor(sec/3600).toString().padStart(2,"0"); const m=Math.floor((sec%3600)/60).toString().padStart(2,"0"); const s=(sec%60).toString().padStart(2,"0"); return `${h}:${m}:${s}`; }
-  function formatTime(sec){ const m=Math.floor(sec/60).toString().padStart(2,"0"); const s=(sec%60).toString().padStart(2,"0"); return `${m}:${s}`; }
 
   // -----------------------
   // Populate Day Selector
@@ -143,9 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
     data.main.forEach(set=>{
       const reps = set.reps || 1;
       for(let i=1;i<=reps;i++){
+        const dur = set.duration;
         const div=document.createElement("div"); div.className="repRow";
-        div.innerHTML=`<span class="repText">${set.text} (Rep ${i}/${reps})</span>
-          <span class="timerSpan" data-duration="${set.duration}">${formatTime(set.duration)}</span>
+        div.innerHTML=`<span class="repText">${set.text} – ${formatMMSS(dur)} (Rep ${i}/${reps})</span>
+          <span class="timerSpan" data-duration="${dur}">${formatTime(dur)}</span>
           <input type="checkbox"/>`;
         mainBlock.appendChild(div);
         if(set.rest){ const rdiv=document.createElement("div"); rdiv.textContent=`Rest ${formatTime(set.rest)}`; rdiv.style.marginLeft="20px"; mainBlock.appendChild(rdiv); }
@@ -191,11 +192,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function generateCalendar(){
     calendar.innerHTML="";
     const today=new Date();
-    const startDate=new Date(today.getFullYear(),today.getMonth(),today.getDate()-today.getDay()+1); // Monday of current week
+    const startDate=new Date(today.getFullYear(),today.getMonth(),today.getDate()-today.getDay()+1); // Monday
     for(let i=0;i<7;i++){
       const d=new Date(startDate); d.setDate(startDate.getDate()+i);
       const div=document.createElement("div"); div.className="calendarDay"; div.textContent=d.getDate();
-      // Check if Monday-Saturday completed
       const dayNames=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
       if(i<dayNames.length){ const reps=Array.from(document.querySelectorAll(".repRow input[type=checkbox]")); if(reps.every(cb=>cb.checked)) div.classList.add("completed"); }
       calendar.appendChild(div);
@@ -206,4 +206,5 @@ document.addEventListener("DOMContentLoaded", () => {
   // Init
   // -----------------------
   renderDay("Monday");
+
 });
