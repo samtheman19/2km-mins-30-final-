@@ -1,4 +1,6 @@
-// Unregister old service workers
+// -----------------------
+// Service Worker Cleanup
+// -----------------------
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(r => r.forEach(reg => reg.unregister()));
 }
@@ -6,77 +8,79 @@ if ('serviceWorker' in navigator) {
 document.addEventListener("DOMContentLoaded", () => {
 
   // -----------------------
-  // Goal pace calculation
+  // User Goal Settings
   // -----------------------
-  const last2kmSec = 8*60 + 36; // last 2km run 8:36
-  const goal2kmSec = 8*60 + 0;  // goal 8:00
-  const goalSpeedKph = (2 / (goal2kmSec/3600)).toFixed(1); // km/h
+  const last2kmTimeSec = 8*60 + 36; // 8:36
+  const goal2kmTimeSec = 8*60 + 0;  // 8:00
+
+  function calcKph(distanceM, timeSec) {
+    // speed = distance / time (m/s) * 3.6 = km/h
+    return ((distanceM / timeSec) * 3.6).toFixed(1);
+  }
 
   // -----------------------
-  // Plan with reps, duration, rest, speed in kph
+  // 6-Day Training Plan
   // -----------------------
   const plan = {
     Monday: {
-      title: "Intervals",
-      explain: `Short, fast repetitions at full effort to develop speed and running economy. 400m reps at ${goalSpeedKph}kph.`,
-      warmup: ["10 min easy jog", "Dynamic mobility (hips, calves, ankles)"],
-      main: [
-        { text: `400 m full effort`, reps: 6, duration: 400/goalSpeedKph*3600, rest: 20, speed: goalSpeedKph }
+      title:"Intervals",
+      explain:"Short, fast repetitions at 2 km goal pace to develop speed and running economy.",
+      warmup:["10 min easy jog","Dynamic mobility (hips, calves, ankles)"],
+      main:[
+        {text:"400 m", reps:6, distance:400, duration: Math.round(400/(2000/goal2kmTimeSec)) , rest:20} // duration in sec, speed auto
       ],
-      mobility: ["Hip flexor stretch – 60 sec", "Calf stretch – 60 sec"]
+      mobility:["Hip flexor stretch – 60 sec","Calf stretch – 60 sec"]
     },
-    Tuesday: {
-      title: "Tempo Run",
-      explain: `Sustained tempo run for ${Math.round(goal2kmSec*2.5/60)} min to improve lactate threshold. Strides at ${ (goalSpeedKph-2).toFixed(1) }kph.`,
-      warmup: ["10 min easy jog"],
-      main: [
-        { text: "Tempo run", duration: Math.round(goal2kmSec*2.5), speed: (goalSpeedKph-2).toFixed(1) },
-        { text: "Relaxed strides", reps: 3, duration: 60, rest:30, speed: (goalSpeedKph-1).toFixed(1) }
+    Tuesday:{
+      title:"Tempo Run",
+      explain:"Sustained controlled effort to improve lactate threshold. Session ~25 min. Target speed slightly below goal pace.",
+      warmup:["10 min easy jog"],
+      main:[
+        {text:"Continuous tempo run", duration:1500, distance:5000}, // example 5 km tempo
+        {text:"3 × 100 m relaxed strides", reps:3, duration:60, rest:30, distance:100}
       ],
-      mobility: ["Hamstring stretch – 60 sec"]
+      mobility:["Hamstring stretch – 60 sec"]
     },
-    Wednesday: {
-      title: "Recovery",
-      explain: "Low intensity aerobic work to promote recovery and maintain form.",
-      warmup: ["5 min brisk walk"],
-      main: [
-        { text: "Easy run or cross-training", duration: 20*60, speed: (goalSpeedKph-4).toFixed(1) }
+    Wednesday:{
+      title:"Recovery",
+      explain:"Low intensity aerobic work to promote recovery and maintain form.",
+      warmup:["5 min brisk walk"],
+      main:[
+        {text:"Easy run or cross-training", duration:1200, distance:2000}
       ],
-      mobility: ["Full body mobility flow – 10 min"]
+      mobility:["Full body mobility flow – 10 min"]
     },
-    Thursday: {
-      title: "VO₂ Max / Hill Sprint",
-      explain: "Choose VO₂ Max or Hill Sprint using the dropdown.",
-      warmup: ["10 min easy jog", "Running drills"],
-      mainVO2: [
-        { text: `500 m @ ${ (goalSpeedKph*1.05).toFixed(1) }kph`, reps: 5, duration: 500/(goalSpeedKph*1.05)*3600, rest:120 }
+    Thursday:{
+      title:"VO₂ Max Intervals",
+      explain:"Choose between VO₂ Max intervals or Hill Sprints.",
+      warmup:["10 min easy jog","Running drills"],
+      main:[
+        {text:"500 m VO₂ Max", reps:5, distance:500, duration:Math.round(500/(2000/goal2kmTimeSec)*0.95), rest:120}, 
+        {text:"Optional: Hill Sprint 60 m", reps:5, distance:60, duration:15, rest:90}
       ],
-      mainHill: [
-        { text: "60 m hill sprint 1:6 gradient", reps: 6, duration: 10, rest:90 }
-      ],
-      mobility: ["Quad stretch – 60 sec"]
+      mobility:["Quad stretch – 60 sec"]
     },
-    Friday: {
-      title: "Endurance + Strides",
-      explain: "Easy aerobic running with short speed exposures. Strides 1 min at slightly faster than tempo.",
-      warmup: ["5–10 min easy jog"],
-      main: [
-        { text: "Easy run", duration: 1800, speed: (goalSpeedKph-3).toFixed(1) },
-        { text: "Strides 1 min", reps: 4, duration: 60, rest:30, speed: (goalSpeedKph-1).toFixed(1) }
+    Friday:{
+      title:"Endurance + Strides",
+      explain:"Easy aerobic running with short speed exposure. Strides 1 min at ~14 kph.",
+      warmup:["5–10 min easy jog"],
+      main:[
+        {text:"Easy run", duration:1800, distance:4000},
+        {text:"4 × 1 min strides", reps:4, duration:60, rest:30, distance:233} 
       ],
-      mobility: ["Foam rolling – 10 min"]
+      mobility:["Foam rolling – 10 min"]
     },
-    Saturday: {
-      title: "Race Simulation",
-      explain: `Broken race effort to practice pacing. Runs at goal pace ${goalSpeedKph}kph.`,
-      warmup: ["10 min easy jog"],
-      main: [
-        { text: `1 km slightly slower than goal pace`, duration: 300, speed: (goalSpeedKph-0.5).toFixed(1) },
-        { text: "Recovery", duration: 120 },
-        { text: "500 m at goal pace", duration: 500/goalSpeedKph*3600, speed: goalSpeedKph },
-        { text: "Fast finish 400m", reps:2, duration: 400/goalSpeedKph*3600, rest:60, speed: goalSpeedKph }
+    Saturday:{
+      title:"Race Simulation",
+      explain:"Broken race effort to practice pacing. Speeds per segment calculated from goal 2 km.",
+      warmup:["10 min easy jog"],
+      main:[
+        {text:"1 km slightly slower than goal pace", duration:300, distance:1000},
+        {text:"Recovery", duration:120, distance:0},
+        {text:"500 m at goal pace", duration:150, distance:500},
+        {text:"2 × 400 m fast finish", reps:2, duration:120, rest:60, distance:400}
       ],
-      mobility: ["Hip flexor stretch – 60 sec"]
+      mobility:["Hip flexor stretch – 60 sec"]
     }
   };
 
@@ -93,87 +97,66 @@ document.addEventListener("DOMContentLoaded", () => {
   const startSession = document.getElementById("startSession");
   const pauseSession = document.getElementById("pauseSession");
   const resetSession = document.getElementById("resetSession");
-  const calendarDiv = document.getElementById("calendar");
   const preFatigue = document.getElementById("preFatigue");
   const postFatigue = document.getElementById("postFatigue");
+  const calendar = document.getElementById("calendar");
 
   const beep = new Audio("https://www.soundjay.com/buttons/beep-07.wav");
 
   // -----------------------
-  // Session Timer
+  // Populate Day Selector
   // -----------------------
-  let sessionSeconds = 0;
-  let sessionInterval;
-  startSession.addEventListener("click", () => {
-    clearInterval(sessionInterval);
-    sessionInterval = setInterval(() => {
-      sessionSeconds++;
-      sessionTime.textContent = formatHMS(sessionSeconds);
-    }, 1000);
-    beep.play();
-    startIntervalTimers();
-  });
-  pauseSession.addEventListener("click", () => clearInterval(sessionInterval));
-  resetSession.addEventListener("click", () => {
-    clearInterval(sessionInterval);
-    sessionSeconds = 0;
-    sessionTime.textContent = formatHMS(sessionSeconds);
-    document.querySelectorAll(".repRow input[type=checkbox]").forEach(cb => cb.checked = false);
-    document.querySelectorAll(".timerSpan").forEach(span => {
-      const dur = parseInt(span.getAttribute("data-duration")) || 0;
-      span.textContent = formatTime(dur);
-      span.parentElement.classList.remove("active","completed");
-    });
-    updateCalendar();
-  });
-
-  function formatHMS(sec) {
-    const h = Math.floor(sec / 3600).toString().padStart(2,"0");
-    const m = Math.floor((sec%3600)/60).toString().padStart(2,"0");
-    const s = (sec%60).toString().padStart(2,"0");
-    return `${h}:${m}:${s}`;
-  }
-  function formatTime(sec){
-    const m = Math.floor(sec/60).toString().padStart(2,"0");
-    const s = Math.floor(sec%60).toString().padStart(2,"0");
-    return `${m}:${s}`;
-  }
-
-  // -----------------------
-  // Populate day selector
-  // -----------------------
-  Object.keys(plan).forEach(day => {
-    const opt = document.createElement("option");
-    opt.value = day;
-    opt.textContent = day;
+  Object.keys(plan).forEach(day=>{
+    const opt=document.createElement("option");
+    opt.value=day;
+    opt.textContent=day;
     daySelect.appendChild(opt);
   });
 
   // -----------------------
-  // Render day
+  // Session Timer
+  // -----------------------
+  let sessionSeconds=0;
+  let sessionInterval;
+  startSession.addEventListener("click",()=>{
+    clearInterval(sessionInterval);
+    sessionInterval=setInterval(()=>{
+      sessionSeconds++;
+      sessionTime.textContent=formatHMS(sessionSeconds);
+    },1000);
+    startIntervalTimers();
+  });
+  pauseSession.addEventListener("click",()=>clearInterval(sessionInterval));
+  resetSession.addEventListener("click",()=>{
+    clearInterval(sessionInterval);
+    sessionSeconds=0;
+    sessionTime.textContent=formatHMS(sessionSeconds);
+    document.querySelectorAll(".repRow input[type=checkbox]").forEach(cb=>cb.checked=false);
+    document.querySelectorAll(".timerSpan").forEach(span=>{
+      const dur=parseInt(span.getAttribute("data-duration"))||0;
+      span.textContent=formatTime(dur);
+    });
+  });
+
+  function formatHMS(sec){
+    const h=Math.floor(sec/3600).toString().padStart(2,"0");
+    const m=Math.floor((sec%3600)/60).toString().padStart(2,"0");
+    const s=(sec%60).toString().padStart(2,"0");
+    return `${h}:${m}:${s}`;
+  }
+  function formatTime(sec){
+    const m=Math.floor(sec/60).toString().padStart(2,"0");
+    const s=(sec%60).toString().padStart(2,"0");
+    return `${m}:${s}`;
+  }
+
+  // -----------------------
+  // Render Day
   // -----------------------
   function renderDay(day){
-    const data = plan[day];
-    dayTitle.textContent = day;
-
-    // Thursday dropdown
-    let mainData = data.main || [];
-    if(day === "Thursday"){
-      dayExplain.innerHTML = `<div class="cardTitle">${data.title}</div><div class="muted">${data.explain}</div>
-      <select id="thursdaySelect">
-        <option value="VO2">VO₂ Max</option>
-        <option value="Hill">Hill Sprint</option>
-      </select>`;
-      const thSelect = document.getElementById("thursdaySelect");
-      mainData = data.mainVO2;
-      thSelect.addEventListener("change",(e)=>{
-        mainData = e.target.value==="VO2"? data.mainVO2:data.mainHill;
-        populateReps(mainData);
-      });
-    } else {
-      dayExplain.innerHTML = `<div class="cardTitle">${data.title}</div><div class="muted">${data.explain}</div>`;
-      mainData = data.main;
-    }
+    const data=plan[day];
+    dayTitle.textContent=day;
+    dayExplain.textContent=data.explain;
 
     // Warm-up
     warmupList.innerHTML="";
@@ -181,6 +164,29 @@ document.addEventListener("DOMContentLoaded", () => {
       const li=document.createElement("li");
       li.textContent=item;
       warmupList.appendChild(li);
+    });
+
+    // Main
+    mainBlock.innerHTML="";
+    data.main.forEach(set=>{
+      const reps=set.reps||1;
+      for(let i=1;i<=reps;i++){
+        const speed=set.distance && set.duration?calcKph(set.distance,set.duration):0;
+        const div=document.createElement("div");
+        div.className="repRow";
+        div.innerHTML=`
+          <span>${set.text} (Rep ${i}/${reps}) ${speed?`- ${speed} kph`:''}</span>
+          <span class="timerSpan" data-duration="${set.duration || 0}">${formatTime(set.duration || 0)}</span>
+          <input type="checkbox" />
+        `;
+        mainBlock.appendChild(div);
+        if(set.rest){
+          const restDiv=document.createElement("div");
+          restDiv.className="repRow";
+          restDiv.innerHTML=`Rest ${formatTime(set.rest)}`;
+          mainBlock.appendChild(restDiv);
+        }
+      }
     });
 
     // Mobility
@@ -191,55 +197,30 @@ document.addEventListener("DOMContentLoaded", () => {
       mobilityList.appendChild(div);
     });
 
-    // Populate reps
-    populateReps(mainData);
-  }
-
-  function populateReps(mainData){
-    mainBlock.innerHTML="";
-    mainData.forEach((set)=>{
-      const reps = set.reps || 1;
-      for(let i=1;i<=reps;i++){
-        const div = document.createElement("div");
-        div.className="repRow";
-        div.innerHTML=`
-          <span class="repText">${set.text} (Rep ${i}/${reps}) ${set.speed? "@ "+set.speed+"kph":""}</span>
-          <span class="timerSpan" data-duration="${Math.round(set.duration)}">${formatTime(Math.round(set.duration))}</span>
-          <input type="checkbox" />
-        `;
-        mainBlock.appendChild(div);
-        if(set.rest){
-          const restDiv=document.createElement("div");
-          restDiv.className="restRow";
-          restDiv.textContent=`Rest ${formatTime(set.rest)}`;
-          mainBlock.appendChild(restDiv);
-        }
-      }
-    });
     updateCalendar();
   }
 
   // -----------------------
-  // Interval logic
+  // Interval Timer Logic
   // -----------------------
   let currentRepIndex=0;
   let intervalTimer;
   function startIntervalTimers(){
     clearInterval(intervalTimer);
-    const repRows=Array.from(mainBlock.querySelectorAll(".repRow"));
+    const repRows=Array.from(mainBlock.querySelectorAll(".repRow input[type=checkbox]")).map(cb=>cb.parentElement);
     currentRepIndex=0;
     runNextRep(repRows);
   }
 
   function runNextRep(repRows){
     if(currentRepIndex>=repRows.length) return;
+    repRows.forEach((r,i)=>r.classList.remove("active"));
     const row=repRows[currentRepIndex];
+    row.classList.add("active");
     const timerSpan=row.querySelector(".timerSpan");
     const cb=row.querySelector("input[type=checkbox]");
     let sec=parseInt(timerSpan.getAttribute("data-duration"));
-    row.classList.add("active");
     beep.play();
-
     intervalTimer=setInterval(()=>{
       sec--;
       timerSpan.textContent=formatTime(sec);
@@ -260,23 +241,36 @@ document.addEventListener("DOMContentLoaded", () => {
   // Calendar
   // -----------------------
   function updateCalendar(){
-    calendarDiv.innerHTML="";
-    const today=new Date();
-    Object.keys(plan).forEach((day,i)=>{
-      const div=document.createElement("div");
-      div.className="calendarDay";
-      div.textContent=day.slice(0,3);
-      const allChecked=Array.from(document.querySelectorAll(".repRow input[type=checkbox]")).every(cb=>cb.checked);
-      if(allChecked && daySelect.value===day) div.classList.add("completed");
-      if(daySelect.value===day) div.classList.add("active");
-      calendarDiv.appendChild(div);
+    const now=new Date();
+    const year=now.getFullYear();
+    const month=now.getMonth();
+    calendar.innerHTML="";
+    const firstDay=new Date(year,month,1).getDay(); // 0=Sun
+    const lastDate=new Date(year,month+1,0).getDate();
+    // Weekday headers
+    const weekdays=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    weekdays.forEach(d=>{
+      const wd=document.createElement("div");
+      wd.textContent=d;
+      wd.style.display="inline-block";
+      wd.style.width="30px";
+      wd.style.textAlign="center";
+      calendar.appendChild(wd);
     });
+    // Days
+    for(let i=1;i<=lastDate;i++){
+      const dayDiv=document.createElement("div");
+      dayDiv.className="calendarDay";
+      dayDiv.textContent=i;
+      if(i==now.getDate()) dayDiv.classList.add("active");
+      calendar.appendChild(dayDiv);
+    }
   }
 
   // -----------------------
   // Init
   // -----------------------
   renderDay("Monday");
-  daySelect.addEventListener("change",(e)=>renderDay(e.target.value));
+  daySelect.addEventListener("change",e=>renderDay(e.target.value));
 
 });
