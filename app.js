@@ -12,17 +12,17 @@ document.addEventListener("DOMContentLoaded", () => {
         "Dynamic mobility drills"
       ],
       main: [
-        "400m @ goal pace",
+        "400m fast",
         "Rest 90s",
-        "400m",
+        "400m fast",
         "Rest 90s",
-        "400m",
+        "400m fast",
         "Rest 90s",
-        "400m",
+        "400m fast",
         "Rest 90s",
-        "400m",
+        "400m fast",
         "Rest 90s",
-        "400m"
+        "400m fast"
       ]
     },
     Tuesday: {
@@ -79,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const warmupList = document.getElementById("warmupList");
   const mainBlock = document.getElementById("mainBlock");
 
+  // Populate the day selector
   Object.keys(plan).forEach(day => {
     const opt = document.createElement("option");
     opt.value = day;
@@ -86,6 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     daySelect.appendChild(opt);
   });
 
+  // Create a workout row with text + checkbox
   function row(text) {
     const div = document.createElement("div");
     div.className = "row";
@@ -93,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return div;
   }
 
+  // Render a day
   function renderDay(day) {
     const d = plan[day];
     dayTitle.textContent = `${day} — ${d.title}`;
@@ -105,11 +108,19 @@ document.addEventListener("DOMContentLoaded", () => {
     d.main.forEach(m => mainBlock.appendChild(row(m)));
   }
 
+  // Auto-select today’s day (Monday-Saturday)
+  const today = new Date();
+  const dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  let currentDay = dayNames[today.getDay()];
+  if (!plan[currentDay]) currentDay = "Monday";
+
+  daySelect.value = currentDay;
+  renderDay(currentDay);
+
   daySelect.addEventListener("change", e => renderDay(e.target.value));
-  renderDay("Monday");
 });
 
-/* TIMER */
+/* TIMER LOGIC */
 let seconds = 0;
 let interval = null;
 
