@@ -63,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let sessionSeconds = 0;
   let sessionInterval;
 
-  // populate day selector
   Object.keys(plan).forEach(day=>{
     const opt=document.createElement("option");
     opt.value=day;
@@ -71,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
     daySelect.appendChild(opt);
   });
 
-  // default to current day
   const weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   const today = new Date();
   const todayName = weekdays[today.getDay()];
@@ -88,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
     dayTitle.textContent = day;
     dayExplain.innerHTML = `<ul><li>${d.explain}</li></ul>`;
 
-    // Warm-up
     warmupList.innerHTML="";
     d.warmup.forEach(w=>{
       const div = document.createElement("div");
@@ -97,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
       warmupList.appendChild(div);
     });
 
-    // Main session
     mainBlock.innerHTML="";
     if(day==="Thursday"){
       const dropdown = document.createElement("select");
@@ -112,7 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderMain(day,type){
     mainBlock.querySelectorAll(".session-item").forEach(e=>e.remove());
-
     let data = plan[day].main;
     if(day==="Thursday") data = (type==="VO2")?plan[day].mainVO2:plan[day].mainHill;
 
