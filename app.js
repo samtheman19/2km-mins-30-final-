@@ -9,38 +9,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const plan = {
     Monday:{
       title:"Intervals",
-      explain:`6 × 400m at ${goalKph} kph (full effort). Rest 20s between reps.`,
+      explain:"6 × 400m intervals at full effort with 20s rest between reps.",
       warmup:[{text:"10 min easy jog",speed:10},{text:"Dynamic mobility"}],
       main:[{text:"400m fast",reps:6,duration:Math.round((0.4/goalDistance)*goalTimeSec),rest:20}]
     },
     Tuesday:{
       title:"Tempo",
-      explain:`25 min steady run at ${(goalKph*0.85).toFixed(1)} kph with warm-up included.`,
+      explain:"25 min tempo run at 85% of goal speed (~"+(goalKph*0.85).toFixed(1)+" kph).",
       warmup:[{text:"10 min easy jog",speed:10}],
       main:[{text:"25 min tempo run",duration:25*60}]
     },
     Wednesday:{
       title:"Recovery",
-      explain:`20 min easy run at 9-10 kph for recovery.`,
+      explain:"Easy aerobic recovery run (~9-10 kph).",
       warmup:[{text:"5 min walk",speed:5}],
       main:[{text:"20 min easy run",duration:20*60,speed:9.5}]
     },
     Thursday:{
       title:"VO₂ Max / Hill",
-      explain:`Choose VO₂ Max intervals or Hill Sprints.`,
+      explain:"Choose VO₂ Max intervals or Hill Sprints.",
       warmup:[{text:"10 min jog",speed:10},{text:"Running drills"}],
       mainVO2:[{text:"500m fast",reps:5,duration:Math.round((0.5/goalDistance)*goalTimeSec*0.9),rest:120}],
       mainHill:[{text:"Hill sprint 60m",reps:6,duration:15,rest:60}]
     },
     Friday:{
       title:"Endurance",
-      explain:`35 min easy run at 10 kph followed by optional strides.`,
+      explain:"35 min easy run followed by optional strides (12-14 kph).",
       warmup:[{text:"10 min easy jog",speed:10}],
       main:[{text:"35 min run",duration:35*60,speed:10}]
     },
     Saturday:{
       title:"Race Simulation",
-      explain:`Broken 2km race at ${goalKph} kph: 1km @ 95% goal, 500m @ goal, 500m fast finish.`,
+      explain:"Broken 2 km race: 1 km @ 95% goal, 500 m @ goal, 500 m fast finish.",
       warmup:[{text:"10 min jog",speed:10}],
       main:[
         {text:"1 km steady",duration:300,speed:(goalKph*0.95).toFixed(1)},
@@ -63,9 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let sessionSeconds = 0;
   let sessionInterval;
-  let currentRepIndex = 0;
-  let intervalTimer;
 
+  // populate day selector
   Object.keys(plan).forEach(day=>{
     const opt=document.createElement("option");
     opt.value=day;
@@ -73,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     daySelect.appendChild(opt);
   });
 
+  // default to current day
   const weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   const today = new Date();
   const todayName = weekdays[today.getDay()];
@@ -87,14 +87,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderDay(day){
     const d = plan[day];
     dayTitle.textContent = day;
-    dayExplain.textContent = d.explain;
+    dayExplain.innerHTML = `<ul><li>${d.explain}</li></ul>`;
 
     // Warm-up
     warmupList.innerHTML="";
     d.warmup.forEach(w=>{
       const div = document.createElement("div");
       div.className="session-item";
-      div.innerHTML = `<span>${w.text}${w.speed?` @ ${w.speed} kph`:""}</span><input type="checkbox">`;
+      div.innerHTML = `<span>• ${w.text}${w.speed?` @ ${w.speed} kph`:""}</span><input type="checkbox">`;
       warmupList.appendChild(div);
     });
 
@@ -112,7 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderMain(day,type){
-    // remove existing
     mainBlock.querySelectorAll(".session-item").forEach(e=>e.remove());
 
     let data = plan[day].main;
@@ -127,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(item.reps) text += ` (Rep ${i}/${item.reps})`;
         if(item.speed) text += ` @ ${item.speed} kph`;
         if(item.rest) text += ` | Rest ${item.rest}s`;
-        div.innerHTML = `<span>${text}</span><input type="checkbox">`;
+        div.innerHTML = `<span>• ${text}</span><input type="checkbox">`;
         mainBlock.appendChild(div);
       }
     });
