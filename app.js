@@ -1,154 +1,157 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-const beep = new Audio("https://www.soundjay.com/buttons/beep-07.wav");
+  const goalTimeSec = 8 * 60;
+  const goalKph = (2 / (goalTimeSec / 3600)).toFixed(1);
 
-const goalTimeSec = 8 * 60;
-const goalKph = (2 / (goalTimeSec / 3600)).toFixed(1);
+  const plan = {
+    Monday: {
+      title: "Intervals",
+      explain: `6 × 400m @ ${goalKph} kph. 90s walk/jog recovery between reps.`,
+      warmup: [
+        "10 min easy jog @ 9.0–9.5 kph",
+        "Dynamic mobility drills"
+      ],
+      main: [
+        "400m fast @ goal pace",
+        "Rest 90s",
+        "400m fast",
+        "Rest 90s",
+        "400m fast",
+        "Rest 90s",
+        "400m fast",
+        "Rest 90s",
+        "400m fast",
+        "Rest 90s",
+        "400m fast"
+      ]
+    },
+    Tuesday: {
+      title: "Tempo",
+      explain: "Sustained threshold effort. Controlled but uncomfortable.",
+      warmup: [
+        "10 min easy jog @ 9.0 kph"
+      ],
+      main: [
+        "25 min tempo @ 85% goal pace (~11.5 kph)"
+      ]
+    },
+    Wednesday: {
+      title: "Recovery",
+      explain: "Very easy aerobic flush.",
+      warmup: [
+        "5 min brisk walk"
+      ],
+      main: [
+        "20 min easy run @ 8.5–9.0 kph"
+      ]
+    },
+    Thursday: {
+      title: "VO₂ Max",
+      explain: "High-intensity aerobic power session.",
+      warmup: [
+        "10 min jog @ 9.0 kph"
+      ],
+      main: [
+        "500m fast @ 110% goal pace",
+        "Rest 2 min",
+        "500m fast",
+        "Rest 2 min",
+        "500m fast",
+        "Rest 2 min",
+        "500m fast",
+        "Rest 2 min",
+        "500m fast"
+      ]
+    },
+    Friday: {
+      title: "Endurance",
+      explain: "Steady aerobic conditioning.",
+      warmup: [
+        "10 min jog"
+      ],
+      main: [
+        "35 min steady run @ 9.5–10.0 kph"
+      ]
+    },
+    Saturday: {
+      title: "Race Simulation",
+      explain: "Broken 2km to rehearse pacing and fatigue.",
+      warmup: [
+        "10 min jog"
+      ],
+      main: [
+        "1 km @ goal pace",
+        "2 min rest",
+        "500m slightly faster than goal pace",
+        "90s rest",
+        "500m max controlled effort"
+      ]
+    }
+  };
 
-const plan = {
-Monday:{
-title:"Intervals",
-explain:`6 × 400 m @ ${goalKph} kph. 20 sec rest between reps.`,
-warmup:[
-"10 min easy jog @ 10 kph",
-"Dynamic mobility (hips, calves)"
-],
-main:[
-{ text:`400 m fast @ ${goalKph} kph (Rest 20s)`, reps:6 }
-]
-},
-Tuesday:{
-title:"Tempo",
-explain:`25 min tempo @ ${(goalKph*0.85).toFixed(1)} kph.`,
-warmup:["10 min easy jog @ 10 kph"],
-main:["25 min continuous tempo run"]
-},
-Wednesday:{
-title:"Recovery",
-explain:"Low-intensity aerobic recovery run.",
-warmup:["5 min brisk walk"],
-main:["20 min easy run @ 9–10 kph"]
-},
-Thursday:{
-title:"VO₂ Max",
-explain:`5 × 500 m @ ${(goalKph*1.1).toFixed(1)} kph. 2 min rest.`,
-warmup:["10 min jog @ 10 kph"],
-main:[
-{ text:`500 m fast @ ${(goalKph*1.1).toFixed(1)} kph (Rest 2 min)`, reps:5 }
-]
-},
-Friday:{
-title:"Endurance",
-explain:"Steady aerobic endurance run.",
-warmup:["10 min jog @ 10 kph"],
-main:["35 min steady run @ 10 kph"]
-},
-Saturday:{
-title:"Race Simulation",
-explain:`Broken 2 km at race pace (${goalKph} kph).`,
-warmup:["10 min jog @ 10 kph"],
-main:[
-"1 km @ 95% race pace",
-"2 min recovery",
-"500 m @ race pace",
-"2 × 400 m fast finish"
-]
-}
-};
+  const daySelect = document.getElementById("daySelect");
+  const dayTitle = document.getElementById("dayTitle");
+  const dayExplain = document.getElementById("dayExplain");
+  const warmupList = document.getElementById("warmupList");
+  const mainBlock = document.getElementById("mainBlock");
 
-const daySelect = document.getElementById("daySelect");
-const warmupList = document.getElementById("warmupList");
-const mainBlock = document.getElementById("mainBlock");
-const dayTitle = document.getElementById("dayTitle");
-const dayExplain = document.getElementById("dayExplain");
-const sessionTimer = document.getElementById("sessionTimer");
+  Object.keys(plan).forEach(day => {
+    const opt = document.createElement("option");
+    opt.value = day;
+    opt.textContent = day;
+    daySelect.appendChild(opt);
+  });
 
-let sessionSeconds = 0;
-let sessionInterval;
+  function row(text) {
+    const div = document.createElement("div");
+    div.className = "row";
+    div.innerHTML = `<span>${text}</span><input type="checkbox">`;
+    return div;
+  }
 
-// -------- Completion Tracking --------
-function todayKey(){
-const d = new Date();
-return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-}
+  function renderDay(day) {
+    const d = plan[day];
+    dayTitle.textContent = day + " — " + d.title;
+    dayExplain.textContent = d.explain;
 
-function updateCompletion(){
-document.getElementById("completionStatus").textContent =
-localStorage.getItem(todayKey()) ? "Completed ✅" : "";
-}
+    warmupList.innerHTML = "";
+    d.warmup.forEach(w => warmupList.appendChild(row(w)));
 
-// -------- Populate Days --------
-Object.keys(plan).forEach(d=>{
-const opt=document.createElement("option");
-opt.value=d;
-opt.textContent=d;
-daySelect.appendChild(opt);
+    mainBlock.innerHTML = "";
+    d.main.forEach(m => mainBlock.appendChild(row(m)));
+  }
+
+  daySelect.addEventListener("change", e => renderDay(e.target.value));
+
+  renderDay("Monday");
 });
 
-const todayName =
-["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
-[new Date().getDay()];
-daySelect.value = plan[todayName] ? todayName : "Monday";
+/* TIMER */
+let seconds = 0;
+let interval = null;
 
-// -------- Render --------
-function renderDay(day){
-warmupList.innerHTML="";
-mainBlock.innerHTML="";
-const d = plan[day];
-
-dayTitle.textContent = day;
-dayExplain.textContent = d.explain;
-
-d.warmup.forEach(t=>{
-const div=document.createElement("div");
-div.className="session-item";
-div.innerHTML=`<span>${t}</span><input type="checkbox">`;
-warmupList.appendChild(div);
-});
-
-d.main.forEach(item=>{
-if(typeof item === "string"){
-const div=document.createElement("div");
-div.className="session-item";
-div.innerHTML=`<span>${item}</span><input type="checkbox">`;
-mainBlock.appendChild(div);
-} else {
-for(let i=1;i<=item.reps;i++){
-const div=document.createElement("div");
-div.className="session-item";
-div.innerHTML=`<span>${item.text} (Rep ${i}/${item.reps})</span><input type="checkbox">`;
-mainBlock.appendChild(div);
-}
-}
-});
-
-updateCompletion();
+function updateTimer() {
+  const min = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const sec = String(seconds % 60).padStart(2, "0");
+  document.getElementById("timer").textContent = `${min}:${sec}`;
 }
 
-// -------- Timer Controls --------
-document.getElementById("start").onclick=()=>{
-clearInterval(sessionInterval);
-sessionInterval=setInterval(()=>{
-sessionSeconds++;
-const m=Math.floor(sessionSeconds/60).toString().padStart(2,"0");
-const s=(sessionSeconds%60).toString().padStart(2,"0");
-sessionTimer.textContent=`${m}:${s}`;
-},1000);
-beep.play();
-};
+function startTimer() {
+  if (!interval) {
+    interval = setInterval(() => {
+      seconds++;
+      updateTimer();
+    }, 1000);
+  }
+}
 
-document.getElementById("pause").onclick=()=>{
-clearInterval(sessionInterval);
-};
+function pauseTimer() {
+  clearInterval(interval);
+  interval = null;
+}
 
-document.getElementById("reset").onclick=()=>{
-clearInterval(sessionInterval);
-sessionSeconds=0;
-sessionTimer.textContent="00:00";
-};
-
-daySelect.onchange=e=>renderDay(e.target.value);
-
-// -------- Init --------
-renderDay(daySelect.value);
-});
+function resetTimer() {
+  pauseTimer();
+  seconds = 0;
+  updateTimer();
+}
