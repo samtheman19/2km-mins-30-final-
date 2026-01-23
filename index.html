@@ -14,7 +14,7 @@
   header {
     padding: 16px;
     text-align: center;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: bold;
     background: #111;
   }
@@ -51,8 +51,32 @@
   }
   .timer {
     text-align: center;
-    font-size: 32px;
+    font-size: 48px;
     margin: 12px 0;
+    border-radius: 12px;
+    border: 1px solid #222;
+    padding: 14px;
+    background: #111;
+  }
+  #dayTitle {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 8px 0 4px 0;
+    text-align: center;
+  }
+  #dayExplain ul {
+    margin:0;
+    padding-left: 20px;
+  }
+  button {
+    width: 32%;
+    padding: 10px;
+    margin: 4px 1%;
+    border-radius: 8px;
+    background: #222;
+    color: #fff;
+    border: 1px solid #333;
+    font-size: 16px;
   }
 </style>
 </head>
@@ -67,6 +91,8 @@
   <label>Post-session fatigue / notes:</label>
   <input type="text" id="postFatigue" placeholder="Enter how you feel">
 </div>
+
+<div class="card timer" id="sessionTime">00:00</div>
 
 <div class="card">
   <select id="daySelect"></select>
@@ -83,8 +109,6 @@
   <h3>Main Session</h3>
   <div id="mainBlock"></div>
 </div>
-
-<div class="card timer" id="sessionTime">00:00</div>
 
 <div class="card">
   <button id="startSession">Start</button>
