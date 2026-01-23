@@ -1,15 +1,54 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+  const beep = new Audio("https://www.soundjay.com/buttons/beep-07.wav");
+
   const goalTimeSec = 8*60;
   const goalDistance = 2;
   const goalKph = (goalDistance/(goalTimeSec/3600)).toFixed(1);
 
   const plan = {
-    Monday:{title:"Intervals",explain:`6 × 400m at ${goalKph} kph. Rest 20s between reps.`,warmup:["10 min easy jog","Dynamic mobility"],main:[{text:"400m fast",reps:6,duration:Math.round((0.4/goalDistance)*goalTimeSec),rest:20}]},
-    Tuesday:{title:"Tempo",explain:`25 min steady run at ${(goalKph*0.85).toFixed(1)} kph.`,warmup:["10 min easy jog"],main:[{text:"25 min tempo run",duration:25*60}]},
-    Wednesday:{title:"Recovery",explain:"Easy aerobic run to recover.",warmup:["5 min walk"],main:[{text:"20 min easy run",duration:20*60}]},
-    Thursday:{title:"VO₂ Max / Hill",explain:"Choose VO₂ Max intervals or Hill sprints.",warmup:["10 min jog"],mainVO2:[{text:"500m fast",reps:5,duration:Math.round((0.5/goalDistance)*goalTimeSec*0.9),rest:120}],mainHill:[{text:"Hill sprint 60m",reps:6,duration:15,rest:60}]},
-    Friday:{title:"Endurance",explain:"35 min easy run.",warmup:["10 min easy jog"],main:[{text:"35 min run",duration:35*60}]},
-    Saturday:{title:"Race Simulation",explain:`Broken 2km at ${goalKph} kph.`,warmup:["10 min jog"],main:[{text:"1km steady",duration:300},{text:"500m fast",duration:150},{text:"500m fast",duration:150}]}
+    Monday:{
+      title:"Intervals",
+      explain:`6 × 400m at ${goalKph} kph (full effort). Rest 20s between reps.`,
+      warmup:[{text:"10 min easy jog",speed:10},{text:"Dynamic mobility"}],
+      main:[{text:"400m fast",reps:6,duration:Math.round((0.4/goalDistance)*goalTimeSec),rest:20}]
+    },
+    Tuesday:{
+      title:"Tempo",
+      explain:`25 min steady run at ${(goalKph*0.85).toFixed(1)} kph with warm-up included.`,
+      warmup:[{text:"10 min easy jog",speed:10}],
+      main:[{text:"25 min tempo run",duration:25*60}]
+    },
+    Wednesday:{
+      title:"Recovery",
+      explain:`20 min easy run at 9-10 kph for recovery.`,
+      warmup:[{text:"5 min walk",speed:5}],
+      main:[{text:"20 min easy run",duration:20*60,speed:9.5}]
+    },
+    Thursday:{
+      title:"VO₂ Max / Hill",
+      explain:`Choose VO₂ Max intervals or Hill Sprints.`,
+      warmup:[{text:"10 min jog",speed:10},{text:"Running drills"}],
+      mainVO2:[{text:"500m fast",reps:5,duration:Math.round((0.5/goalDistance)*goalTimeSec*0.9),rest:120}],
+      mainHill:[{text:"Hill sprint 60m",reps:6,duration:15,rest:60}]
+    },
+    Friday:{
+      title:"Endurance",
+      explain:`35 min easy run at 10 kph followed by optional strides.`,
+      warmup:[{text:"10 min easy jog",speed:10}],
+      main:[{text:"35 min run",duration:35*60,speed:10}]
+    },
+    Saturday:{
+      title:"Race Simulation",
+      explain:`Broken 2km race at ${goalKph} kph: 1km @ 95% goal, 500m @ goal, 500m fast finish.`,
+      warmup:[{text:"10 min jog",speed:10}],
+      main:[
+        {text:"1 km steady",duration:300,speed:(goalKph*0.95).toFixed(1)},
+        {text:"Recovery 2 min",duration:120},
+        {text:"500 m fast",duration:150,speed:goalKph},
+        {text:"2 × 400 m fast finish",reps:2,duration:120,speed:(goalKph*1.05).toFixed(1),rest:60}
+      ]
+    }
   };
 
   const daySelect = document.getElementById("daySelect");
@@ -27,23 +66,21 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentRepIndex = 0;
   let intervalTimer;
 
-  // populate day select
-  Object.keys(plan).forEach(day => {
-    const opt = document.createElement("option");
-    opt.value = day;
-    opt.textContent = day;
+  Object.keys(plan).forEach(day=>{
+    const opt=document.createElement("option");
+    opt.value=day;
+    opt.textContent=day;
     daySelect.appendChild(opt);
   });
 
-  // default selection = today
   const weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   const today = new Date();
   const todayName = weekdays[today.getDay()];
   daySelect.value = todayName;
 
   function formatTime(sec){
-    const m = Math.floor(sec/60).toString().padStart(2,"0");
-    const s = (sec%60).toString().padStart(2,"0");
+    const m=Math.floor(sec/60).toString().padStart(2,"0");
+    const s=(sec%60).toString().padStart(2,"0");
     return `${m}:${s}`;
   }
 
@@ -52,15 +89,17 @@ document.addEventListener("DOMContentLoaded", () => {
     dayTitle.textContent = day;
     dayExplain.textContent = d.explain;
 
+    // Warm-up
     warmupList.innerHTML="";
     d.warmup.forEach(w=>{
-      const li=document.createElement("li");
-      li.textContent=w;
-      warmupList.appendChild(li);
+      const div = document.createElement("div");
+      div.className="session-item";
+      div.innerHTML = `<span>${w.text}${w.speed?` @ ${w.speed} kph`:""}</span><input type="checkbox">`;
+      warmupList.appendChild(div);
     });
 
+    // Main session
     mainBlock.innerHTML="";
-
     if(day==="Thursday"){
       const dropdown = document.createElement("select");
       dropdown.innerHTML=`<option value="VO2">VO₂ Max</option><option value="Hill">Hill Sprint</option>`;
@@ -73,20 +112,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderMain(day,type){
-    mainBlock.querySelectorAll(".rep").forEach(e=>e.remove());
+    // remove existing
+    mainBlock.querySelectorAll(".session-item").forEach(e=>e.remove());
 
     let data = plan[day].main;
-    if(day==="Thursday") data = (type==="VO2") ? plan[day].mainVO2 : plan[day].mainHill;
+    if(day==="Thursday") data = (type==="VO2")?plan[day].mainVO2:plan[day].mainHill;
 
     data.forEach(item=>{
       const reps = item.reps || 1;
       for(let i=1;i<=reps;i++){
         const div = document.createElement("div");
-        div.className="rep";
+        div.className="session-item";
         let text = item.text;
         if(item.reps) text += ` (Rep ${i}/${item.reps})`;
+        if(item.speed) text += ` @ ${item.speed} kph`;
         if(item.rest) text += ` | Rest ${item.rest}s`;
-        div.textContent = text;
+        div.innerHTML = `<span>${text}</span><input type="checkbox">`;
         mainBlock.appendChild(div);
       }
     });
@@ -98,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sessionSeconds++;
       sessionTime.textContent = formatTime(sessionSeconds);
     },1000);
+    beep.play();
   });
 
   pauseBtn.addEventListener("click", ()=>clearInterval(sessionInterval));
@@ -105,8 +147,10 @@ document.addEventListener("DOMContentLoaded", () => {
     clearInterval(sessionInterval);
     sessionSeconds=0;
     sessionTime.textContent = formatTime(sessionSeconds);
+    document.querySelectorAll("input[type=checkbox]").forEach(cb=>cb.checked=false);
   });
 
   renderDay(todayName);
   daySelect.addEventListener("change", e=>renderDay(e.target.value));
+
 });
