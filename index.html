@@ -5,76 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2km Training Plan</title>
 <style>
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #000;
-    color: #fff;
-  }
-  header {
-    padding: 16px;
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-    background: #111;
-    border-bottom: 1px solid #333;
-  }
-  .card {
-    background: #111;
-    margin: 12px;
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px #000;
-  }
-  select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    background: #222;
-    color: #fff;
-    border: none;
-    margin-bottom: 12px;
-  }
-  h2, h3 {
-    margin: 8px 0;
-  }
-  ul {
-    padding-left: 20px;
-  }
-  .repRow {
-    padding: 8px;
-    margin: 6px 0;
-    border-radius: 8px;
-    background: #111;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #333;
-  }
-  .timer {
-    font-weight: bold;
-    margin-left: 12px;
-  }
-  #sessionTime {
-    font-size: 28px;
-    text-align: center;
-    margin: 12px 0;
-  }
-  button {
-    padding: 10px 16px;
-    margin: 4px;
-    border: none;
-    border-radius: 8px;
-    background: #222;
-    color: #fff;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #333;
-  }
-  .mobility {
-    margin-top: 10px;
-  }
+  body {margin:0; font-family: sans-serif; background:#0f1220; color:white;}
+  header{padding:16px; text-align:center; font-size:22px; font-weight:bold;}
+  .card{background:#15182a; margin:12px; padding:14px; border-radius:14px;}
+  select{width:100%; padding:10px; border-radius:8px; background:#101017; color:white; border:none; margin-bottom:10px;}
+  .rep{background:#0e1020; padding:10px; border-radius:10px; margin-top:8px;}
 </style>
 </head>
 <body>
@@ -86,8 +21,6 @@
   <p id="dayExplain"></p>
 </div>
 
-<div id="sessionTime" class="card">00:00</div>
-
 <div class="card">
   <h3>Warm-up</h3>
   <ul id="warmupList"></ul>
@@ -96,22 +29,6 @@
 <div class="card">
   <h3>Main Session</h3>
   <div id="mainBlock"></div>
-</div>
-
-<div class="card mobility">
-  <h3>Mobility / Cooldown</h3>
-  <div id="mobilityList"></div>
-</div>
-
-<div class="card">
-  <input type="number" id="preFatigue" placeholder="Pre-workout fatigue 1-5" min="1" max="5"/>
-  <input type="number" id="postFatigue" placeholder="Post-workout fatigue 1-5" min="1" max="5"/>
-</div>
-
-<div class="card">
-  <button id="startSession">Start</button>
-  <button id="pauseSession">Pause</button>
-  <button id="resetSession">Reset</button>
 </div>
 
 <script src="app.js"></script>
