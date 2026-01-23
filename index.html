@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2km Training Plan</title>
 
+<link rel="manifest" href="manifest.json">
+
 <style>
   body {
     margin: 0;
@@ -16,14 +18,14 @@
   header {
     text-align: center;
     padding: 16px;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 600;
   }
 
   .card {
     background: #111;
     margin: 12px;
-    padding: 14px;
+    padding: 16px;
     border-radius: 14px;
   }
 
@@ -35,6 +37,7 @@
     border: 1px solid #333;
     border-radius: 10px;
     font-size: 16px;
+    margin-bottom: 10px;
   }
 
   h2, h3 {
@@ -44,6 +47,7 @@
   /* TIMER BLOCK */
   .timer-card {
     text-align: center;
+    margin-bottom: 14px;
   }
 
   .timer {
@@ -127,6 +131,13 @@
   <div id="mainBlock"></div>
 </div>
 
-<script src="app.js?v=8"></script>
+<script src="app.js?v=9"></script>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./service-worker.js");
+  }
+</script>
+
 </body>
 </html>
