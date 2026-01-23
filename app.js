@@ -9,38 +9,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const plan = {
     Monday:{
       title:"Intervals",
-      explain:"6 × 400m intervals at full effort with 20s rest between reps.",
+      explain:"6 × 400m intervals at full effort. Rest 20s between reps. Warm-up 10 min easy jog + dynamic mobility.",
       warmup:[{text:"10 min easy jog",speed:10},{text:"Dynamic mobility"}],
       main:[{text:"400m fast",reps:6,duration:Math.round((0.4/goalDistance)*goalTimeSec),rest:20}]
     },
     Tuesday:{
       title:"Tempo",
-      explain:"25 min tempo run at 85% of goal speed (~"+(goalKph*0.85).toFixed(1)+" kph).",
+      explain:"25 min tempo run at 85% of goal speed (~"+(goalKph*0.85).toFixed(1)+" kph). Warm-up 10 min easy jog.",
       warmup:[{text:"10 min easy jog",speed:10}],
       main:[{text:"25 min tempo run",duration:25*60}]
     },
     Wednesday:{
       title:"Recovery",
-      explain:"Easy aerobic recovery run (~9-10 kph).",
+      explain:"Easy aerobic recovery run (~9-10 kph). Warm-up 5 min walk.",
       warmup:[{text:"5 min walk",speed:5}],
       main:[{text:"20 min easy run",duration:20*60,speed:9.5}]
     },
     Thursday:{
       title:"VO₂ Max / Hill",
-      explain:"Choose VO₂ Max intervals or Hill Sprints.",
+      explain:"Choose VO₂ Max intervals or Hill Sprints. Warm-up 10 min jog + running drills.",
       warmup:[{text:"10 min jog",speed:10},{text:"Running drills"}],
       mainVO2:[{text:"500m fast",reps:5,duration:Math.round((0.5/goalDistance)*goalTimeSec*0.9),rest:120}],
       mainHill:[{text:"Hill sprint 60m",reps:6,duration:15,rest:60}]
     },
     Friday:{
       title:"Endurance",
-      explain:"35 min easy run followed by optional strides (12-14 kph).",
+      explain:"35 min easy run followed by optional strides (12-14 kph). Warm-up 10 min easy jog.",
       warmup:[{text:"10 min easy jog",speed:10}],
       main:[{text:"35 min run",duration:35*60,speed:10}]
     },
     Saturday:{
       title:"Race Simulation",
-      explain:"Broken 2 km race: 1 km @ 95% goal, 500 m @ goal, 500 m fast finish.",
+      explain:"Broken 2 km race: 1 km @ 95% goal, 500 m @ goal, 500 m fast finish. Warm-up 10 min jog.",
       warmup:[{text:"10 min jog",speed:10}],
       main:[
         {text:"1 km steady",duration:300,speed:(goalKph*0.95).toFixed(1)},
