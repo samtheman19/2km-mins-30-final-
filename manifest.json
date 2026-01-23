@@ -1,11 +1,10 @@
 {
-  "name": "2 km Speed Plan -30s",
-  "short_name": "2km -30s",
+  "name": "2km Training Plan",
+  "short_name": "2km Plan",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0b0b0f",
-  "theme_color": "#6fd3ff",
-  "description": "6-day 2 km training plan to improve speed by 30s in 3 weeks.",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     {
       "src": "icon-192.png",
