@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   const beep = new Audio("https://www.soundjay.com/buttons/beep-07.wav");
-
   const goalTimeSec = 8*60;
   const goalDistance = 2;
   const goalKph = (goalDistance/(goalTimeSec/3600)).toFixed(1);
