@@ -6,53 +6,43 @@ document.addEventListener("DOMContentLoaded", () => {
   const plan = {
     Monday: {
       title: "Intervals",
-      explain: `6 × 400m @ ${goalKph} kph. 90s walk/jog recovery between reps.`,
+      explain: `6 × 400m @ ${goalKph} kph with 90s jog/walk recoveries.`,
       warmup: [
         "10 min easy jog @ 9.0–9.5 kph",
         "Dynamic mobility drills"
       ],
       main: [
-        "400m fast @ goal pace",
+        "400m @ goal pace",
         "Rest 90s",
-        "400m fast",
+        "400m",
         "Rest 90s",
-        "400m fast",
+        "400m",
         "Rest 90s",
-        "400m fast",
+        "400m",
         "Rest 90s",
-        "400m fast",
+        "400m",
         "Rest 90s",
-        "400m fast"
+        "400m"
       ]
     },
     Tuesday: {
       title: "Tempo",
-      explain: "Sustained threshold effort. Controlled but uncomfortable.",
-      warmup: [
-        "10 min easy jog @ 9.0 kph"
-      ],
-      main: [
-        "25 min tempo @ 85% goal pace (~11.5 kph)"
-      ]
+      explain: "Sustained threshold effort.",
+      warmup: ["10 min jog @ 9.0 kph"],
+      main: ["25 min tempo @ ~11.5 kph"]
     },
     Wednesday: {
       title: "Recovery",
       explain: "Very easy aerobic flush.",
-      warmup: [
-        "5 min brisk walk"
-      ],
-      main: [
-        "20 min easy run @ 8.5–9.0 kph"
-      ]
+      warmup: ["5 min brisk walk"],
+      main: ["20 min easy run @ 8.5–9.0 kph"]
     },
     Thursday: {
       title: "VO₂ Max",
       explain: "High-intensity aerobic power session.",
-      warmup: [
-        "10 min jog @ 9.0 kph"
-      ],
+      warmup: ["10 min jog @ 9.0 kph"],
       main: [
-        "500m fast @ 110% goal pace",
+        "500m fast",
         "Rest 2 min",
         "500m fast",
         "Rest 2 min",
@@ -66,25 +56,19 @@ document.addEventListener("DOMContentLoaded", () => {
     Friday: {
       title: "Endurance",
       explain: "Steady aerobic conditioning.",
-      warmup: [
-        "10 min jog"
-      ],
-      main: [
-        "35 min steady run @ 9.5–10.0 kph"
-      ]
+      warmup: ["10 min jog"],
+      main: ["35 min steady @ 9.5–10.0 kph"]
     },
     Saturday: {
       title: "Race Simulation",
-      explain: "Broken 2km to rehearse pacing and fatigue.",
-      warmup: [
-        "10 min jog"
-      ],
+      explain: "Broken 2km to rehearse pacing.",
+      warmup: ["10 min jog"],
       main: [
         "1 km @ goal pace",
         "2 min rest",
-        "500m slightly faster than goal pace",
+        "500m fast",
         "90s rest",
-        "500m max controlled effort"
+        "500m hard finish"
       ]
     }
   };
@@ -111,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderDay(day) {
     const d = plan[day];
-    dayTitle.textContent = day + " — " + d.title;
+    dayTitle.textContent = `${day} — ${d.title}`;
     dayExplain.textContent = d.explain;
 
     warmupList.innerHTML = "";
@@ -122,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   daySelect.addEventListener("change", e => renderDay(e.target.value));
-
   renderDay("Monday");
 });
 
@@ -131,9 +114,9 @@ let seconds = 0;
 let interval = null;
 
 function updateTimer() {
-  const min = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const sec = String(seconds % 60).padStart(2, "0");
-  document.getElementById("timer").textContent = `${min}:${sec}`;
+  const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const s = String(seconds % 60).padStart(2, "0");
+  document.getElementById("timer").textContent = `${m}:${s}`;
 }
 
 function startTimer() {
