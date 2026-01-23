@@ -5,14 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2km Training Plan</title>
 <style>
-  body {margin:0; font-family: sans-serif; background:#0f1220; color:white;}
-  header{padding:16px; text-align:center; font-size:22px; font-weight:bold;}
-  .card{background:#15182a; margin:12px; padding:14px; border-radius:14px;}
-  select{width:100%; padding:10px; border-radius:8px; background:#101017; color:white; border:none; margin-bottom:10px;}
-  .rep{background:#0e1020; padding:10px; border-radius:10px; margin-top:8px;}
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #000;
+    color: #fff;
+  }
+  header {
+    padding: 16px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    background: #111;
+  }
+  .card {
+    background: #111;
+    margin: 12px;
+    padding: 14px;
+    border-radius: 12px;
+  }
+  select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    background: #111;
+    color: white;
+    border: 1px solid #333;
+    margin-bottom: 10px;
+  }
+  .rep {
+    background: #111;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 8px;
+    border: 1px solid #222;
+  }
+  .timer {
+    text-align: center;
+    font-size: 32px;
+    margin: 12px 0;
+  }
 </style>
 </head>
 <body>
+
 <header>2km Training Plan</header>
 
 <div class="card">
@@ -29,6 +65,14 @@
 <div class="card">
   <h3>Main Session</h3>
   <div id="mainBlock"></div>
+</div>
+
+<div class="card timer" id="sessionTime">00:00</div>
+
+<div class="card">
+  <button id="startSession">Start</button>
+  <button id="pauseSession">Pause</button>
+  <button id="resetSession">Reset</button>
 </div>
 
 <script src="app.js"></script>
